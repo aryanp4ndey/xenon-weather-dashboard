@@ -2,141 +2,136 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Weather Dashboard Design System - All colors MUST be HSL */
+/* Glassmorphism Weather Dashboard Design System - Apple.com inspired */
 
 @layer base {
   :root {
-    /* Light theme */
-    --background: 0 0% 98%;
-    --foreground: 240 10% 4%;
+    /* Light theme - Glassmorphism */
+    --background: 220 30% 96%;
+    --foreground: 220 15% 20%;
     
-    /* Weather Dashboard specific colors */
-    --dashboard-bg: 240 10% 95%;
-    --sidebar-bg: 0 0% 100%;
-    --card-bg: 0 0% 100%;
-    --card-border: 220 13% 91%;
+    /* Glass backgrounds */
+    --glass-bg: 255 255 255 / 0.15;
+    --glass-border: 255 255 255 / 0.2;
+    --glass-secondary: 255 255 255 / 0.08;
+    --glass-hover: 255 255 255 / 0.25;
     
-    /* Weather card backgrounds */
-    --weather-card-bg: 0 0% 100%;
-    --weather-card-secondary: 240 5% 96%;
+    /* Gradients for glass effect */
+    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+    --gradient-glass-border: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+    --gradient-background: linear-gradient(135deg, hsl(220, 70%, 90%), hsl(240, 60%, 95%));
     
     /* Text colors */
-    --text-primary: 240 10% 4%;
-    --text-secondary: 240 4% 46%;
-    --text-muted: 240 4% 64%;
+    --text-primary: 220 15% 15%;
+    --text-secondary: 220 15% 35%;
+    --text-muted: 220 10% 50%;
     
-    /* Weather specific colors */
-    --temperature-primary: 240 10% 4%;
-    --weather-accent: 217 91% 60%;
-    --sunrise-color: 45 93% 58%;
-    --sunset-color: 25 95% 63%;
+    /* Weather accent colors */
+    --weather-accent: 220 90% 56%;
+    --sunrise-color: 45 100% 60%;
+    --sunset-color: 25 100% 65%;
     
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(240 56% 70%));
-    --gradient-weather: linear-gradient(135deg, hsl(240 5% 96%), hsl(220 13% 91%));
+    /* Blur effects */
+    --blur-sm: blur(8px);
+    --blur-md: blur(12px);
+    --blur-lg: blur(16px);
     
-    /* Shadows */
-    --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    /* Shadows for depth */
+    --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-glass-lg: 0 16px 64px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
     
-    /* Standard tokens */
-    --card: var(--card-bg);
+    /* Standard tokens adapted for glass */
+    --card: var(--glass-bg);
     --card-foreground: var(--text-primary);
-    --popover: var(--card-bg);
+    --popover: var(--glass-bg);
     --popover-foreground: var(--text-primary);
-    --primary: 217 91% 60%;
+    --primary: 220 90% 56%;
     --primary-foreground: 0 0% 100%;
-    --secondary: var(--weather-card-secondary);
+    --secondary: var(--glass-secondary);
     --secondary-foreground: var(--text-primary);
-    --muted: 240 5% 96%;
+    --muted: var(--glass-secondary);
     --muted-foreground: var(--text-secondary);
-    --accent: var(--weather-card-secondary);
+    --accent: var(--glass-hover);
     --accent-foreground: var(--text-primary);
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: var(--card-border);
-    --input: var(--card-border);
+    --border: var(--glass-border);
+    --input: var(--glass-border);
     --ring: var(--primary);
-    --radius: 0.75rem;
+    --radius: 16px;
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: var(--glass-bg);
+    --sidebar-foreground: var(--text-primary);
+    --sidebar-primary: 220 90% 56%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: var(--glass-hover);
+    --sidebar-accent-foreground: var(--text-primary);
+    --sidebar-border: var(--glass-border);
+    --sidebar-ring: 220 90% 56%;
   }
 
   .dark {
-    /* Dark theme */
-    --background: 240 10% 4%;
-    --foreground: 0 0% 98%;
+    /* Dark theme - Glassmorphism */
+    --background: 220 25% 8%;
+    --foreground: 220 15% 92%;
     
-    /* Weather Dashboard specific colors - Dark */
-    --dashboard-bg: 240 10% 4%;
-    --sidebar-bg: 240 8% 6%;
-    --card-bg: 240 8% 8%;
-    --card-border: 240 6% 12%;
+    /* Glass backgrounds - Dark */
+    --glass-bg: 0 0 0 / 0.2;
+    --glass-border: 255 255 255 / 0.1;
+    --glass-secondary: 0 0 0 / 0.15;
+    --glass-hover: 255 255 255 / 0.08;
     
-    /* Weather card backgrounds - Dark */
-    --weather-card-bg: 240 8% 8%;
-    --weather-card-secondary: 240 6% 10%;
+    /* Gradients for glass effect - Dark */
+    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+    --gradient-glass-border: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+    --gradient-background: linear-gradient(135deg, hsl(220, 30%, 6%), hsl(240, 25%, 12%));
     
     /* Text colors - Dark */
-    --text-primary: 0 0% 98%;
-    --text-secondary: 240 5% 84%;
-    --text-muted: 240 5% 64%;
+    --text-primary: 220 15% 92%;
+    --text-secondary: 220 15% 70%;
+    --text-muted: 220 10% 55%;
     
-    /* Weather specific colors - Dark */
-    --temperature-primary: 0 0% 98%;
-    --weather-accent: 217 91% 60%;
-    --sunrise-color: 45 93% 58%;
-    --sunset-color: 25 95% 63%;
+    /* Weather accent colors - Dark */
+    --weather-accent: 220 90% 56%;
+    --sunrise-color: 45 100% 60%;
+    --sunset-color: 25 100% 65%;
     
-    /* Gradients - Dark */
-    --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(240 56% 70%));
-    --gradient-weather: linear-gradient(135deg, hsl(240 8% 8%), hsl(240 6% 12%));
+    /* Blur effects */
+    --blur-sm: blur(8px);
+    --blur-md: blur(12px);
+    --blur-lg: blur(16px);
     
-    /* Shadows - Dark */
-    --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+    /* Shadows for depth - Dark */
+    --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+    --shadow-glass-lg: 0 16px 64px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);
     
-    /* Standard tokens - Dark */
-    --card: var(--card-bg);
+    /* Standard tokens adapted for glass - Dark */
+    --card: var(--glass-bg);
     --card-foreground: var(--text-primary);
-    --popover: var(--card-bg);
+    --popover: var(--glass-bg);
     --popover-foreground: var(--text-primary);
-    --primary: 217 91% 60%;
+    --primary: 220 90% 56%;
     --primary-foreground: 0 0% 100%;
-    --secondary: var(--weather-card-secondary);
+    --secondary: var(--glass-secondary);
     --secondary-foreground: var(--text-primary);
-    --muted: 240 6% 10%;
+    --muted: var(--glass-secondary);
     --muted-foreground: var(--text-secondary);
-    --accent: var(--weather-card-secondary);
+    --accent: var(--glass-hover);
     --accent-foreground: var(--text-primary);
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: var(--card-border);
-    --input: var(--card-border);
+    --border: var(--glass-border);
+    --input: var(--glass-border);
     --ring: var(--primary);
-    
-    --sidebar-background: var(--sidebar-bg);
+
+    --sidebar-background: var(--glass-bg);
     --sidebar-foreground: var(--text-primary);
-    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary: 220 90% 56%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 6% 12%;
+    --sidebar-accent: var(--glass-hover);
     --sidebar-accent-foreground: var(--text-primary);
-    --sidebar-border: var(--card-border);
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-border: var(--glass-border);
+    --sidebar-ring: 220 90% 56%;
   }
 }
 
@@ -146,6 +141,37 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-inter antialiased;
+    background: var(--gradient-background);
+    min-height: 100vh;
+  }
+}
+
+/* Glassmorphism utility classes */
+@layer utilities {
+  .glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+  
+  .glass-card {
+    background: var(--gradient-glass);
+    backdrop-filter: var(--blur-md);
+    -webkit-backdrop-filter: var(--blur-md);
+    border: 1px solid;
+    border-image: var(--gradient-glass-border) 1;
+    box-shadow: var(--shadow-glass);
+  }
+  
+  .glass-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .glass-hover:hover {
+    background: var(--glass-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-glass-lg);
   }
 }

@@ -36,23 +36,23 @@ const WeatherForecast = () => {
   ];
 
   return (
-    <Card className="bg-weather-card-bg border-border shadow-card p-6">
-      <h3 className="text-xl font-semibold text-text-primary mb-6">10 Day Forecast</h3>
+    <div className="glass-card rounded-3xl p-8 shadow-glass">
+      <h3 className="text-xl font-medium text-text-primary mb-8">10 Day Forecast</h3>
       
-      <div className="grid grid-cols-5 gap-3">
+      <div className="grid grid-cols-5 gap-6">
         {forecast.map((day, index) => (
-          <div key={index} className="text-center">
-            <p className="text-sm text-text-secondary mb-3">{day.day}</p>
-            <div className="flex justify-center mb-3">
-              <div className="w-12 h-12 bg-weather-card-secondary rounded-lg flex items-center justify-center">
+          <div key={index} className="text-center glass-hover">
+            <p className="text-sm text-text-secondary mb-4 font-medium">{day.day}</p>
+            <div className="flex justify-center mb-4">
+              <div className="w-14 h-14 glass rounded-2xl flex items-center justify-center glass-hover">
                 <day.icon className={`h-6 w-6 ${day.iconColor}`} />
               </div>
             </div>
-            <p className="text-sm font-semibold text-text-primary">{day.temp}</p>
+            <p className="text-sm font-medium text-text-primary">{day.temp}</p>
           </div>
         ))}
       </div>
-    </Card>
+    </div>
   );
 };
 
