@@ -1,177 +1,451 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Glassmorphism Weather Dashboard Design System - Apple.com inspired */
+/* Hide scrollbars */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* WebKit */
+}
+
+html,
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
 
 @layer base {
   :root {
-    /* Light theme - Glassmorphism */
-    --background: 220 30% 96%;
-    --foreground: 220 15% 20%;
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
     
-    /* Glass backgrounds */
-    --glass-bg: 255 255 255 / 0.15;
-    --glass-border: 255 255 255 / 0.2;
-    --glass-secondary: 255 255 255 / 0.08;
-    --glass-hover: 255 255 255 / 0.25;
-    
-    /* Gradients for glass effect */
-    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
-    --gradient-glass-border: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
-    --gradient-background: linear-gradient(135deg, hsl(220, 70%, 90%), hsl(240, 60%, 95%));
-    
-    /* Text colors */
-    --text-primary: 220 15% 15%;
-    --text-secondary: 220 15% 35%;
-    --text-muted: 220 10% 50%;
-    
-    /* Weather accent colors */
-    --weather-accent: 220 90% 56%;
-    --sunrise-color: 45 100% 60%;
-    --sunset-color: 25 100% 65%;
-    
-    /* Blur effects */
-    --blur-sm: blur(8px);
-    --blur-md: blur(12px);
-    --blur-lg: blur(16px);
-    
-    /* Shadows for depth */
-    --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05);
-    --shadow-glass-lg: 0 16px 64px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
-    
-    /* Standard tokens adapted for glass */
-    --card: var(--glass-bg);
-    --card-foreground: var(--text-primary);
-    --popover: var(--glass-bg);
-    --popover-foreground: var(--text-primary);
-    --primary: 220 90% 56%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: var(--glass-secondary);
-    --secondary-foreground: var(--text-primary);
-    --muted: var(--glass-secondary);
-    --muted-foreground: var(--text-secondary);
-    --accent: var(--glass-hover);
-    --accent-foreground: var(--text-primary);
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
-    --border: var(--glass-border);
-    --input: var(--glass-border);
-    --ring: var(--primary);
-    --radius: 16px;
-
-    --sidebar-background: var(--glass-bg);
-    --sidebar-foreground: var(--text-primary);
-    --sidebar-primary: 220 90% 56%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: var(--glass-hover);
-    --sidebar-accent-foreground: var(--text-primary);
-    --sidebar-border: var(--glass-border);
-    --sidebar-ring: 220 90% 56%;
+    /* Smooth easing curves */
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+    --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
+    --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+    --ease-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 
-  .dark {
-    /* Dark theme - Glassmorphism */
-    --background: 220 25% 8%;
-    --foreground: 220 15% 92%;
-    
-    /* Glass backgrounds - Dark */
-    --glass-bg: 0 0 0 / 0.2;
-    --glass-border: 255 255 255 / 0.1;
-    --glass-secondary: 0 0 0 / 0.15;
-    --glass-hover: 255 255 255 / 0.08;
-    
-    /* Gradients for glass effect - Dark */
-    --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
-    --gradient-glass-border: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
-    --gradient-background: linear-gradient(135deg, hsl(220, 30%, 6%), hsl(240, 25%, 12%));
-    
-    /* Text colors - Dark */
-    --text-primary: 220 15% 92%;
-    --text-secondary: 220 15% 70%;
-    --text-muted: 220 10% 55%;
-    
-    /* Weather accent colors - Dark */
-    --weather-accent: 220 90% 56%;
-    --sunrise-color: 45 100% 60%;
-    --sunset-color: 25 100% 65%;
-    
-    /* Blur effects */
-    --blur-sm: blur(8px);
-    --blur-md: blur(12px);
-    --blur-lg: blur(16px);
-    
-    /* Shadows for depth - Dark */
-    --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
-    --shadow-glass-lg: 0 16px 64px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);
-    
-    /* Standard tokens adapted for glass - Dark */
-    --card: var(--glass-bg);
-    --card-foreground: var(--text-primary);
-    --popover: var(--glass-bg);
-    --popover-foreground: var(--text-primary);
-    --primary: 220 90% 56%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: var(--glass-secondary);
-    --secondary-foreground: var(--text-primary);
-    --muted: var(--glass-secondary);
-    --muted-foreground: var(--text-secondary);
-    --accent: var(--glass-hover);
-    --accent-foreground: var(--text-primary);
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
-    --border: var(--glass-border);
-    --input: var(--glass-border);
-    --ring: var(--primary);
-
-    --sidebar-background: var(--glass-bg);
-    --sidebar-foreground: var(--text-primary);
-    --sidebar-primary: 220 90% 56%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: var(--glass-hover);
-    --sidebar-accent-foreground: var(--text-primary);
-    --sidebar-border: var(--glass-border);
-    --sidebar-ring: 220 90% 56%;
+  /* Glassmorphism Components */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    transition: all 0.6s var(--ease-out-expo);
+    will-change: transform, backdrop-filter, box-shadow;
   }
-}
 
-@layer base {
-  * {
-    @apply border-border;
+  .glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.4s var(--ease-out-quart);
+  }
+
+  .glass-hover {
+    transition: all 0.5s var(--ease-out-expo);
+    will-change: transform, backdrop-filter, background;
+  }
+
+  .glass-hover:hover {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Dynamic Background */
+  .bg-gradient-background {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.8s var(--ease-out-expo);
+  }
+
+  .bg-gradient-background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+    animation: backgroundShift 20s ease-in-out infinite;
+    will-change: opacity;
+    transition: opacity 0.8s var(--ease-out-expo);
+  }
+
+  /* Weather Animations */
+  @keyframes backgroundShift {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+  }
+
+  @keyframes sunRays {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  @keyframes floatingClouds {
+    0%, 100% { transform: translateX(0px) translateY(0px); }
+    33% { transform: translateX(10px) translateY(-5px); }
+    66% { transform: translateX(-5px) translateY(5px); }
+  }
+
+  @keyframes fallingRain {
+    0% { transform: translateY(-10px); opacity: 0; }
+    10% { opacity: 1; }
+    100% { transform: translateY(100px); opacity: 0; }
+  }
+
+  @keyframes gentleBreeze {
+    0%, 100% { transform: translateX(0px); }
+    50% { transform: translateX(3px); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.02); }
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200px 0; }
+    100% { background-position: calc(200px + 100%) 0; }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Weather Animation Classes */
+  .sun-rays {
+    animation: sunRays 20s linear infinite;
+    will-change: transform;
+  }
+
+  .floating-clouds {
+    animation: floatingClouds 8s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .falling-rain {
+    animation: fallingRain 1s linear infinite;
+    will-change: transform, opacity;
+  }
+
+  .gentle-breeze {
+    animation: gentleBreeze 4s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .weather-emoji {
+    font-size: 4rem;
+    animation: pulse 4s var(--ease-in-out-quart) infinite;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    will-change: opacity, transform;
+    transition: all 0.4s var(--ease-out-expo);
+  }
+
+  /* Card Entrance Animations */
+  .card-entrance {
+    animation: slideInUp 0.8s var(--ease-out-expo) both;
+    will-change: transform, opacity;
+  }
+
+  .card-entrance:nth-child(1) { animation-delay: 0.1s; }
+  .card-entrance:nth-child(2) { animation-delay: 0.2s; }
+  .card-entrance:nth-child(3) { animation-delay: 0.3s; }
+  .card-entrance:nth-child(4) { animation-delay: 0.4s; }
+
+  /* Typography Improvements */
+  .text-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transition: all 0.4s var(--ease-out-quart);
+  }
+
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: text-shadow 0.3s var(--ease-out-quart);
+  }
+
+  /* Enhanced Interactive Elements */
+  .interactive-card {
+    cursor: pointer;
+    transition: all 0.5s var(--ease-out-expo);
+    will-change: transform, box-shadow, backdrop-filter;
+  }
+
+  .interactive-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+  }
+
+  .interactive-card:active {
+    transform: translateY(-3px) scale(1.01);
+    transition: all 0.2s var(--ease-out-quart);
+  }
+
+  /* Progress Bars */
+  .progress-bar {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    height: 8px;
+    position: relative;
+    transition: all 0.4s var(--ease-out-quart);
+  }
+
+  .progress-bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -200px;
+    width: 200px;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    animation: shimmer 2.5s infinite;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 12px;
+    transition: width 1s var(--ease-out-expo);
+    will-change: width;
+  }
+
+  /* Weather Condition Specific Styles */
+  .weather-clear {
+    background: linear-gradient(135deg, #74b9ff 0%, #0984e3 50%, #fdcb6e 100%);
+    transition: background 0.8s var(--ease-out-expo);
+  }
+
+  .weather-clouds {
+    background: linear-gradient(135deg, #ddd6fe 0%, #8b5cf6 50%, #a78bfa 100%);
+    transition: background 0.8s var(--ease-out-expo);
+  }
+
+  .weather-rain {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+    transition: background 0.8s var(--ease-out-expo);
+  }
+
+  .weather-snow {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
+    transition: background 0.8s var(--ease-out-expo);
+  }
+
+  /* Loading States */
+  .loading-skeleton {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.1) 25%,
+      rgba(255, 255, 255, 0.2) 50%,
+      rgba(255, 255, 255, 0.1) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+    border-radius: 12px;
+    transition: all 0.4s var(--ease-out-quart);
+  }
+
+  /* Focus States */
+  .focus-ring {
+    outline: 2px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 2px;
+    transition: outline 0.3s var(--ease-out-quart);
+  }
+
+  /* Performance Optimizations */
+  .gpu-accelerated {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  /* Smooth scrolling optimized for Lenis */
+  html {
+    scroll-behavior: auto; /* Let Lenis handle smooth scrolling */
   }
 
   body {
-    @apply bg-background text-foreground font-inter antialiased;
-    background: var(--gradient-background);
-    min-height: 100vh;
+    overflow-x: hidden;
   }
-}
 
-/* Glassmorphism utility classes */
-@layer utilities {
-  .glass {
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
   }
-  
-  .glass-card {
-    background: var(--gradient-glass);
-    backdrop-filter: var(--blur-md);
-    -webkit-backdrop-filter: var(--blur-md);
-    border: 1px solid;
-    border-image: var(--gradient-glass-border) 1;
-    box-shadow: var(--shadow-glass);
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    transition: background 0.3s var(--ease-out-quart);
   }
-  
-  .glass-hover {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
   }
-  
-  .glass-hover:hover {
-    background: var(--glass-hover);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-glass-lg);
+
+  /* Enhanced hover states for better UX */
+  button, .interactive-card, input {
+    transition: all 0.4s var(--ease-out-expo);
+  }
+
+  button:hover {
+    transform: translateY(-1px);
+  }
+
+  input:focus {
+    transform: scale(1.02);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Mobile Optimizations */
+  @media (max-width: 768px) {
+    .glass-card {
+      margin: 0.5rem;
+      padding: 1rem;
+      transition: all 0.4s var(--ease-out-quart);
+    }
+    
+    .weather-emoji {
+      font-size: 3rem;
+    }
+    
+    .interactive-card:hover {
+      transform: none;
+    }
+    
+    .interactive-card:active {
+      transform: scale(0.98);
+      transition: all 0.2s var(--ease-out-quart);
+    }
+    
+    /* Optimize for touch */
+    .glass-hover:hover {
+      transform: none;
+    }
+    
+    .glass-hover:active {
+      transform: translateY(-2px);
+      transition: all 0.2s var(--ease-out-quart);
+    }
+  }
+
+  /* Accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.2s !important;
+      scroll-behavior: auto !important;
+    }
+    
+    .card-entrance {
+      animation: scaleIn 0.3s ease-out both;
+    }
+    
+    .weather-emoji {
+      animation: none;
+    }
+    
+    .interactive-card:hover {
+      transform: translateY(-2px);
+    }
+  }
+
+  /* High Contrast Mode */
+  @media (prefers-contrast: high) {
+    .glass-card {
+      background: rgba(0, 0, 0, 0.8);
+      border: 2px solid #ffffff;
+    }
+    
+    .glass {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid #ffffff;
+    }
+    
+    .text-shadow {
+      text-shadow: none;
+    }
   }
 }
