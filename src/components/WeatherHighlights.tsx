@@ -1,27 +1,12 @@
+import React, { memo } from "react";
 import { Wind, Droplets, Eye, Sun, Sunset } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { geocodeCity, fetchCurrentWeather } from "@/lib/weatherApi";
+import { useWeather } from "@/contexts/WeatherContext";
 
-interface WeatherHighlightsProps {
-  city: string;
-}
+const WeatherHighlights = memo(() => {
+  const { geoData, weatherData, isLoading, isError, city } = useWeather();
 
-const WeatherHighlights = ({ city }: WeatherHighlightsProps) => {
-  const geoQuery = useQuery({
-    queryKey: ["geo", city],
-    queryFn: () => geocodeCity(city),
-  });
-
-  const coords = geoQuery.data ? { lat: geoQuery.data.lat, lon: geoQuery.data.lon } : null;
-
-  const weatherQuery = useQuery({
-    queryKey: ["current", coords?.lat, coords?.lon],
-    queryFn: () => fetchCurrentWeather(coords!.lat, coords!.lon, "metric"),
-    enabled: !!coords,
-  });
-
-  if (geoQuery.isLoading || weatherQuery.isLoading) {
+  if (isLoading) {
     return (
       <div className="glass-card rounded-3xl p-6 sm:p-8 h-full shadow-glass card-entrance">
         <h3 className="text-lg sm:text-xl font-medium text-white mb-6 sm:mb-8 text-shadow">Today's Highlight</h3>
@@ -37,7 +22,7 @@ const WeatherHighlights = ({ city }: WeatherHighlightsProps) => {
     );
   }
 
-  if (geoQuery.isError || !coords) {
+  if (isError || !geoData) {
     return (
       <div className="glass-card rounded-3xl p-6 sm:p-8 h-full shadow-glass card-entrance">
         <h3 className="text-lg sm:text-xl font-medium text-white mb-6 sm:mb-8 text-shadow">Today's Highlight</h3>
@@ -46,7 +31,7 @@ const WeatherHighlights = ({ city }: WeatherHighlightsProps) => {
     );
   }
 
-  if (weatherQuery.isError) {
+  if (!weatherData) {
     return (
       <div className="glass-card rounded-3xl p-6 sm:p-8 h-full shadow-glass card-entrance">
         <h3 className="text-lg sm:text-xl font-medium text-white mb-6 sm:mb-8 text-shadow">Today's Highlight</h3>
@@ -55,7 +40,7 @@ const WeatherHighlights = ({ city }: WeatherHighlightsProps) => {
     );
   }
 
-  const w = weatherQuery.data;
+  const w = weatherData;
   const wind = w.wind?.speed ?? 0; // m/s in metric by default for OWM; could convert to km/h
   const windKmh = Math.round(wind * 3.6);
   const humidity = w.main?.humidity ?? 0;
@@ -180,6 +165,8 @@ const WeatherHighlights = ({ city }: WeatherHighlightsProps) => {
       </div>
     </div>
   );
-};
+});
+
+WeatherHighlights.displayName = 'WeatherHighlights';
 
 export default WeatherHighlights;

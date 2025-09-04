@@ -1,31 +1,14 @@
-import { useMemo } from "react";
+import React, { useMemo, memo } from "react";
 import { MapPin } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { geocodeCity, fetchCurrentWeather } from "@/lib/weatherApi";
+import { useWeather } from "@/contexts/WeatherContext";
 import { getWeatherEmoji, getWeatherBackground, isDayTime, getTimeBasedGreeting, getWeatherAnimation } from "@/lib/weatherUtils";
 
-interface WeatherCardProps {
-  city: string;
-}
-
-const WeatherCard = ({ city }: WeatherCardProps) => {
-  const geoQuery = useQuery({
-    queryKey: ["geo", city],
-    queryFn: () => geocodeCity(city),
-  });
-
-  const coords = geoQuery.data ? { lat: geoQuery.data.lat, lon: geoQuery.data.lon } : null;
-
-  const weatherQuery = useQuery({
-    queryKey: ["current", coords?.lat, coords?.lon],
-    queryFn: () => fetchCurrentWeather(coords!.lat, coords!.lon, "metric"),
-    enabled: !!coords,
-  });
-
+const WeatherCard = memo(() => {
+  const { geoData, weatherData, isLoading, isError, city } = useWeather();
   const today = useMemo(() => new Date(), []);
 
-  if (geoQuery.isLoading || weatherQuery.isLoading) {
+  if (isLoading) {
     return (
       <div className="glass-card rounded-3xl p-6 sm:p-8 h-full shadow-glass card-entrance">
         <div className="animate-pulse space-y-4">
@@ -37,7 +20,7 @@ const WeatherCard = ({ city }: WeatherCardProps) => {
     );
   }
 
-  if (geoQuery.isError || !coords) {
+  if (isError || !geoData) {
     return (
       <div className="glass-card rounded-3xl p-6 sm:p-8 h-full shadow-glass card-entrance">
         <p className="text-sm text-red-400">Could not find the city "{city}".</p>
@@ -45,7 +28,7 @@ const WeatherCard = ({ city }: WeatherCardProps) => {
     );
   }
 
-  if (weatherQuery.isError) {
+  if (!weatherData) {
     return (
       <div className="glass-card rounded-3xl p-6 sm:p-8 h-full shadow-glass card-entrance">
         <p className="text-sm text-red-400">Failed to load weather data.</p>
@@ -53,13 +36,12 @@ const WeatherCard = ({ city }: WeatherCardProps) => {
     );
   }
 
-  const w = weatherQuery.data;
+  const w = weatherData;
   const temp = Math.round(w.main?.temp ?? 0);
   const tempMin = Math.round(w.main?.temp_min ?? 0);
   const tempMax = Math.round(w.main?.temp_max ?? 0);
   const desc = w.weather?.[0]?.description ?? "";
-  const weatherCode = w.weather?.[0]?.main ?? "";
-  const locationLabel = `${geoQuery.data?.name || city}${geoQuery.data?.country ? ", " + geoQuery.data.country : ""}`;
+  const locationLabel = `${geoData?.name || city}${geoData?.country ? ", " + geoData.country : ""}`;
   
   const isDay = isDayTime(w.sys?.sunrise ?? 0, w.sys?.sunset ?? 0, w.timezone ?? 0);
   const weatherEmoji = getWeatherEmoji(desc, isDay);
@@ -69,7 +51,7 @@ const WeatherCard = ({ city }: WeatherCardProps) => {
 
   return (
     <div 
-      className="glass-card rounded-3xl p-6 sm:p-8 h-full shadow-glass card-entrance interactive-card relative overflow-hidden"
+      className="glass-card rounded-3xl p-6 sm:p-8 h-full shadow-glass interactive-card relative overflow-hidden card-entrance"
       style={{ background: weatherBg }}
     >
       {/* Animated Background Elements */}
@@ -120,6 +102,8 @@ const WeatherCard = ({ city }: WeatherCardProps) => {
       </div>
     </div>
   );
-};
+});
+
+WeatherCard.displayName = 'WeatherCard';
 
 export default WeatherCard;

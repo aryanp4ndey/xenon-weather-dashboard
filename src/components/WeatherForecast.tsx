@@ -1,32 +1,16 @@
-import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useMemo, memo } from "react";
 import { format } from "date-fns";
-import { geocodeCity, fetchForecast } from "@/lib/weatherApi";
+import { useWeather } from "@/contexts/WeatherContext";
 import { getWeatherEmoji, isDayTime } from "@/lib/weatherUtils";
 
-interface WeatherForecastProps {
-  city: string;
-}
-
-const WeatherForecast = ({ city }: WeatherForecastProps) => {
-  const geoQuery = useQuery({
-    queryKey: ["geo", city],
-    queryFn: () => geocodeCity(city),
-  });
-
-  const coords = geoQuery.data ? { lat: geoQuery.data.lat, lon: geoQuery.data.lon } : null;
-
-  const forecastQuery = useQuery({
-    queryKey: ["forecast", coords?.lat, coords?.lon],
-    queryFn: () => fetchForecast(coords!.lat, coords!.lon, "metric"),
-    enabled: !!coords,
-  });
+const WeatherForecast = memo(() => {
+  const { geoData, forecastData, isLoading, isError, city } = useWeather();
 
   const dailyForecast = useMemo(() => {
-    if (!forecastQuery.data) return [];
+    if (!forecastData) return [];
 
-    const list: any[] = forecastQuery.data.list ?? [];
-    const tzOffsetSec: number = forecastQuery.data.city?.timezone ?? 0;
+    const list: any[] = forecastData.list ?? [];
+    const tzOffsetSec: number = forecastData.city?.timezone ?? 0;
 
     // Group forecast items by day
     const forecastsByDay: { [key: string]: any[] } = list.reduce((acc, item) => {
@@ -78,11 +62,11 @@ const WeatherForecast = ({ city }: WeatherForecastProps) => {
         };
       })
       .filter(Boolean) as { day: string; condition: string; temp: number; emoji: string }[];
-  }, [forecastQuery.data]);
+  }, [forecastData]);
 
-  if (geoQuery.isLoading || forecastQuery.isLoading) {
+  if (isLoading) {
     return (
-      <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass card-entrance">
+      <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass">
         <h3 className="text-lg sm:text-xl font-medium text-white mb-4 sm:mb-6 text-shadow">Today / Week</h3>
         <div className="space-y-4 animate-pulse">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -96,18 +80,18 @@ const WeatherForecast = ({ city }: WeatherForecastProps) => {
     );
   }
 
-  if (geoQuery.isError || !coords) {
+  if (isError || !geoData) {
     return (
-      <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass card-entrance">
+      <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass">
         <h3 className="text-lg sm:text-xl font-medium text-white mb-6 sm:mb-8 text-shadow">Today / Week</h3>
         <p className="text-sm text-red-400">Could not find the city "{city}".</p>
       </div>
     );
   }
 
-  if (forecastQuery.isError) {
+  if (!forecastData) {
     return (
-      <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass card-entrance">
+      <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass">
         <h3 className="text-lg sm:text-xl font-medium text-white mb-6 sm:mb-8 text-shadow">Today / Week</h3>
         <p className="text-sm text-red-400">Failed to load forecast.</p>
       </div>
@@ -115,14 +99,13 @@ const WeatherForecast = ({ city }: WeatherForecastProps) => {
   }
 
   return (
-    <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass card-entrance">
+    <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass">
       <h3 className="text-lg sm:text-xl font-medium text-white mb-4 sm:mb-6 text-shadow">Today / Week</h3>
       <div className="space-y-2">
         {dailyForecast.map((item, idx) => (
           <div
             key={idx}
             className="flex items-center justify-between glass rounded-2xl p-3 sm:p-4 glass-hover interactive-card"
-            style={{ animationDelay: `${idx * 0.08}s` }}
           >
             <div>
               <p className="text-xs sm:text-sm text-white/80 font-medium">{item.day}</p>
@@ -139,6 +122,8 @@ const WeatherForecast = ({ city }: WeatherForecastProps) => {
       </div>
     </div>
   );
-};
+});
+
+WeatherForecast.displayName = 'WeatherForecast';
 
 export default WeatherForecast;

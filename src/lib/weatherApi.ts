@@ -20,8 +20,17 @@ function ensureApiKey() {
   }
 }
 
+// Cache for geocoding results to avoid repeated API calls
+const geocodeCache = new Map<string, GeoResult | null>();
+
 export async function geocodeCity(city: string): Promise<GeoResult | null> {
   ensureApiKey();
+  
+  // Check cache first
+  const cacheKey = city.toLowerCase().trim();
+  if (geocodeCache.has(cacheKey)) {
+    return geocodeCache.get(cacheKey)!;
+  }
   
   // Try different variations of the city name
   const variations = [
@@ -34,12 +43,18 @@ export async function geocodeCity(city: string): Promise<GeoResult | null> {
   for (const variation of variations) {
     try {
       const url = `${API_BASE}/geo/1.0/direct?q=${encodeURIComponent(variation)}&limit=5&appid=${API_KEY}`;
-      const res = await fetch(url);
+      const res = await fetch(url, {
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
       if (!res.ok) continue;
       
       const data: GeoResult[] = await res.json();
       if (data && data.length > 0) {
-        return data[0]; // Return the first match
+        const result = data[0];
+        geocodeCache.set(cacheKey, result);
+        return result;
       }
     } catch (error) {
       console.warn(`Geocoding failed for "${variation}":`, error);
@@ -47,13 +62,18 @@ export async function geocodeCity(city: string): Promise<GeoResult | null> {
     }
   }
   
+  geocodeCache.set(cacheKey, null);
   return null;
 }
 
 export async function fetchCurrentWeather(lat: number, lon: number, units: "metric" | "imperial" = "metric"): Promise<CurrentWeather> {
   ensureApiKey();
   const url = `${API_BASE}/data/2.5/weather?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`;
-  const res = await fetch(url);
+  const res = await fetch(url, {
+    headers: {
+      'Accept': 'application/json',
+    },
+  });
   if (!res.ok) throw new Error(`Current weather failed: ${res.status} ${res.statusText}`);
   return res.json();
 }
@@ -61,7 +81,11 @@ export async function fetchCurrentWeather(lat: number, lon: number, units: "metr
 export async function fetchForecast(lat: number, lon: number, units: "metric" | "imperial" = "metric"): Promise<ForecastResponse> {
   ensureApiKey();
   const url = `${API_BASE}/data/2.5/forecast?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`;
-  const res = await fetch(url);
+  const res = await fetch(url, {
+    headers: {
+      'Accept': 'application/json',
+    },
+  });
   if (!res.ok) throw new Error(`Forecast failed: ${res.status} ${res.statusText}`);
   return res.json();
 }
