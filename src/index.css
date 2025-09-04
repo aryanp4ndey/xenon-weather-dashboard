@@ -3,30 +3,22 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom scrollbar styling - allows scrolling but with clean appearance */
+/* Hide scrollbar while preserving scroll functionality */
+/* For WebKit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 0px;
+  background: transparent;
 }
 
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
-  transition: background 0.3s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.4);
-}
-
-/* Firefox scrollbar styling */
+/* For Firefox */
 html {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
+  scrollbar-width: none;
+}
+
+/* For Internet Explorer and Edge Legacy */
+html, body {
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch; /* Enable smooth scrolling on iOS */
 }
 
 @layer base {
@@ -63,374 +55,365 @@ html {
     --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
     --ease-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
+}
 
-  /* Glassmorphism Components */
+/* Glassmorphism Components */
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.6s var(--ease-out-expo);
+  will-change: transform, backdrop-filter, box-shadow;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.4s var(--ease-out-quart);
+}
+
+.glass-hover {
+  transition: all 0.5s var(--ease-out-expo);
+  will-change: transform, backdrop-filter, background;
+}
+
+.glass-hover:hover {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+}
+
+/* Dynamic Background */
+.bg-gradient-background {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.8s var(--ease-out-expo);
+}
+
+.bg-gradient-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+              radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+              radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+  animation: backgroundShift 20s ease-in-out infinite;
+  will-change: opacity;
+  transition: opacity 0.8s var(--ease-out-expo);
+}
+
+/* Weather Animations */
+@keyframes backgroundShift {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes sunRays {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes floatingClouds {
+  0%, 100% { transform: translateX(0px) translateY(0px); }
+  33% { transform: translateX(10px) translateY(-5px); }
+  66% { transform: translateX(-5px) translateY(5px); }
+}
+
+@keyframes fallingRain {
+  0% { transform: translateY(-10px); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translateY(100px); opacity: 0; }
+}
+
+@keyframes gentleBreeze {
+  0%, 100% { transform: translateX(0px); }
+  50% { transform: translateX(3px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.02); }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Weather Animation Classes */
+.sun-rays {
+  animation: sunRays 20s linear infinite;
+  will-change: transform;
+}
+
+.floating-clouds {
+  animation: floatingClouds 8s ease-in-out infinite;
+  will-change: transform;
+}
+
+.falling-rain {
+  animation: fallingRain 1s linear infinite;
+  will-change: transform, opacity;
+}
+
+.gentle-breeze {
+  animation: gentleBreeze 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+.weather-emoji {
+  font-size: 4rem;
+  animation: pulse 4s var(--ease-in-out-quart) infinite;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  will-change: opacity, transform;
+  transition: all 0.4s var(--ease-out-expo);
+}
+
+/* Card Entrance Animations */
+.card-entrance {
+  animation: slideInUp 0.8s var(--ease-out-expo) both;
+  will-change: transform, opacity;
+}
+
+.card-entrance:nth-child(1) { animation-delay: 0.1s; }
+.card-entrance:nth-child(2) { animation-delay: 0.2s; }
+.card-entrance:nth-child(3) { animation-delay: 0.3s; }
+.card-entrance:nth-child(4) { animation-delay: 0.4s; }
+
+/* Typography Improvements */
+.text-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: all 0.4s var(--ease-out-quart);
+}
+
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: text-shadow 0.3s var(--ease-out-quart);
+}
+
+/* Enhanced Interactive Elements */
+.interactive-card {
+  cursor: pointer;
+  transition: all 0.5s var(--ease-out-expo);
+  will-change: transform, box-shadow, backdrop-filter;
+}
+
+.interactive-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+}
+
+.interactive-card:active {
+  transform: translateY(-3px) scale(1.01);
+  transition: all 0.2s var(--ease-out-quart);
+}
+
+/* Progress Bars */
+.progress-bar {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  height: 8px;
+  position: relative;
+  transition: all 0.4s var(--ease-out-quart);
+}
+
+.progress-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -200px;
+  width: 200px;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: shimmer 2.5s infinite;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 12px;
+  transition: width 1s var(--ease-out-expo);
+  will-change: width;
+}
+
+/* Weather Condition Specific Styles */
+.weather-clear {
+  background: linear-gradient(135deg, #74b9ff 0%, #0984e3 50%, #fdcb6e 100%);
+  transition: background 0.8s var(--ease-out-expo);
+}
+
+.weather-clouds {
+  background: linear-gradient(135deg, #ddd6fe 0%, #8b5cf6 50%, #a78bfa 100%);
+  transition: background 0.8s var(--ease-out-expo);
+}
+
+.weather-rain {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+  transition: background 0.8s var(--ease-out-expo);
+}
+
+.weather-snow {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
+  transition: background 0.8s var(--ease-out-expo);
+}
+
+/* Loading States */
+.loading-skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+  border-radius: 12px;
+  transition: all 0.4s var(--ease-out-quart);
+}
+
+/* Focus States */
+.focus-ring {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+  transition: outline 0.3s var(--ease-out-quart);
+}
+
+/* Performance Optimizations */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Enhanced hover states for better UX */
+button, .interactive-card, input {
+  transition: all 0.4s var(--ease-out-expo);
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+input:focus {
+  transform: scale(1.02);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
   .glass-card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    transition: all 0.6s var(--ease-out-expo);
-    will-change: transform, backdrop-filter, box-shadow;
-  }
-
-  .glass {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 0.5rem;
+    padding: 1rem;
     transition: all 0.4s var(--ease-out-quart);
   }
-
-  .glass-hover {
-    transition: all 0.5s var(--ease-out-expo);
-    will-change: transform, backdrop-filter, background;
-  }
-
-  .glass-hover:hover {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    transform: translateY(-4px);
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
-  }
-
-  /* Dynamic Background */
-  .bg-gradient-background {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    position: relative;
-    overflow: hidden;
-    transition: background 0.8s var(--ease-out-expo);
-  }
-
-  .bg-gradient-background::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
-    animation: backgroundShift 20s ease-in-out infinite;
-    will-change: opacity;
-    transition: opacity 0.8s var(--ease-out-expo);
-  }
-
-  /* Weather Animations */
-  @keyframes backgroundShift {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.8; }
-  }
-
-  @keyframes sunRays {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
-  @keyframes floatingClouds {
-    0%, 100% { transform: translateX(0px) translateY(0px); }
-    33% { transform: translateX(10px) translateY(-5px); }
-    66% { transform: translateX(-5px) translateY(5px); }
-  }
-
-  @keyframes fallingRain {
-    0% { transform: translateY(-10px); opacity: 0; }
-    10% { opacity: 1; }
-    100% { transform: translateY(100px); opacity: 0; }
-  }
-
-  @keyframes gentleBreeze {
-    0%, 100% { transform: translateX(0px); }
-    50% { transform: translateX(3px); }
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.8; transform: scale(1.02); }
-  }
-
-  @keyframes slideInUp {
-    from {
-      opacity: 0;
-      transform: translateY(40px) scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-
-  @keyframes shimmer {
-    0% { background-position: -200px 0; }
-    100% { background-position: calc(200px + 100%) 0; }
-  }
-
-  @keyframes scaleIn {
-    from {
-      opacity: 0;
-      transform: scale(0.9);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  /* Weather Animation Classes */
-  .sun-rays {
-    animation: sunRays 20s linear infinite;
-    will-change: transform;
-  }
-
-  .floating-clouds {
-    animation: floatingClouds 8s ease-in-out infinite;
-    will-change: transform;
-  }
-
-  .falling-rain {
-    animation: fallingRain 1s linear infinite;
-    will-change: transform, opacity;
-  }
-
-  .gentle-breeze {
-    animation: gentleBreeze 4s ease-in-out infinite;
-    will-change: transform;
-  }
-
+  
   .weather-emoji {
-    font-size: 4rem;
-    animation: pulse 4s var(--ease-in-out-quart) infinite;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-    will-change: opacity, transform;
-    transition: all 0.4s var(--ease-out-expo);
+    font-size: 3rem;
   }
-
-  /* Card Entrance Animations */
-  .card-entrance {
-    animation: slideInUp 0.8s var(--ease-out-expo) both;
-    will-change: transform, opacity;
-  }
-
-  .card-entrance:nth-child(1) { animation-delay: 0.1s; }
-  .card-entrance:nth-child(2) { animation-delay: 0.2s; }
-  .card-entrance:nth-child(3) { animation-delay: 0.3s; }
-  .card-entrance:nth-child(4) { animation-delay: 0.4s; }
-
-  /* Typography Improvements */
-  .text-gradient {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    transition: all 0.4s var(--ease-out-quart);
-  }
-
-  .text-shadow {
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    transition: text-shadow 0.3s var(--ease-out-quart);
-  }
-
-  /* Enhanced Interactive Elements */
-  .interactive-card {
-    cursor: pointer;
-    transition: all 0.5s var(--ease-out-expo);
-    will-change: transform, box-shadow, backdrop-filter;
-  }
-
+  
   .interactive-card:hover {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+    transform: none;
   }
-
+  
   .interactive-card:active {
-    transform: translateY(-3px) scale(1.01);
+    transform: scale(0.98);
     transition: all 0.2s var(--ease-out-quart);
   }
-
-  /* Progress Bars */
-  .progress-bar {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    overflow: hidden;
-    height: 8px;
-    position: relative;
-    transition: all 0.4s var(--ease-out-quart);
+  
+  /* Optimize for touch */
+  .glass-hover:hover {
+    transform: none;
   }
-
-  .progress-bar::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -200px;
-    width: 200px;
-    height: 100%;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.2),
-      transparent
-    );
-    animation: shimmer 2.5s infinite;
+  
+  .glass-hover:active {
+    transform: translateY(-2px);
+    transition: all 0.2s var(--ease-out-quart);
   }
+}
 
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #667eea, #764ba2);
-    border-radius: 12px;
-    transition: width 1s var(--ease-out-expo);
-    will-change: width;
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.2s !important;
+    scroll-behavior: auto !important;
   }
-
-  /* Weather Condition Specific Styles */
-  .weather-clear {
-    background: linear-gradient(135deg, #74b9ff 0%, #0984e3 50%, #fdcb6e 100%);
-    transition: background 0.8s var(--ease-out-expo);
+  
+  .card-entrance {
+    animation: scaleIn 0.3s ease-out both;
   }
-
-  .weather-clouds {
-    background: linear-gradient(135deg, #ddd6fe 0%, #8b5cf6 50%, #a78bfa 100%);
-    transition: background 0.8s var(--ease-out-expo);
+  
+  .weather-emoji {
+    animation: none;
   }
-
-  .weather-rain {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
-    transition: background 0.8s var(--ease-out-expo);
+  
+  .interactive-card:hover {
+    transform: translateY(-2px);
   }
+}
 
-  .weather-snow {
-    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 50%, #90caf9 100%);
-    transition: background 0.8s var(--ease-out-expo);
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .glass-card {
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #ffffff;
   }
-
-  /* Loading States */
-  .loading-skeleton {
-    background: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.1) 25%,
-      rgba(255, 255, 255, 0.2) 50%,
-      rgba(255, 255, 255, 0.1) 75%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 2s infinite;
-    border-radius: 12px;
-    transition: all 0.4s var(--ease-out-quart);
+  
+  .glass {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid #ffffff;
   }
-
-  /* Focus States */
-  .focus-ring {
-    outline: 2px solid rgba(255, 255, 255, 0.5);
-    outline-offset: 2px;
-    transition: outline 0.3s var(--ease-out-quart);
-  }
-
-  /* Performance Optimizations */
-  .gpu-accelerated {
-    transform: translateZ(0);
-    will-change: transform;
-  }
-
-  /* Smooth scrolling optimized for Lenis */
-  html {
-    scroll-behavior: auto; /* Let Lenis handle smooth scrolling */
-  }
-
-  body {
-    overflow-x: hidden;
-  }
-
-  /* Enhanced hover states for better UX */
-  button, .interactive-card, input {
-    transition: all 0.4s var(--ease-out-expo);
-  }
-
-  button:hover {
-    transform: translateY(-1px);
-  }
-
-  input:focus {
-    transform: scale(1.02);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  }
-
-  /* Mobile Optimizations */
-  @media (max-width: 768px) {
-    .glass-card {
-      margin: 0.5rem;
-      padding: 1rem;
-      transition: all 0.4s var(--ease-out-quart);
-    }
-    
-    .weather-emoji {
-      font-size: 3rem;
-    }
-    
-    .interactive-card:hover {
-      transform: none;
-    }
-    
-    .interactive-card:active {
-      transform: scale(0.98);
-      transition: all 0.2s var(--ease-out-quart);
-    }
-    
-    /* Optimize for touch */
-    .glass-hover:hover {
-      transform: none;
-    }
-    
-    .glass-hover:active {
-      transform: translateY(-2px);
-      transition: all 0.2s var(--ease-out-quart);
-    }
-  }
-
-  /* Accessibility */
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.2s !important;
-      scroll-behavior: auto !important;
-    }
-    
-    .card-entrance {
-      animation: scaleIn 0.3s ease-out both;
-    }
-    
-    .weather-emoji {
-      animation: none;
-    }
-    
-    .interactive-card:hover {
-      transform: translateY(-2px);
-    }
-  }
-
-  /* High Contrast Mode */
-  @media (prefers-contrast: high) {
-    .glass-card {
-      background: rgba(0, 0, 0, 0.8);
-      border: 2px solid #ffffff;
-    }
-    
-    .glass {
-      background: rgba(0, 0, 0, 0.6);
-      border: 1px solid #ffffff;
-    }
-    
-    .text-shadow {
-      text-shadow: none;
-    }
+  
+  .text-shadow {
+    text-shadow: none;
   }
 }
