@@ -24,6 +24,21 @@ export default {
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
+				
+				// Weather Dashboard Colors
+				'dashboard-bg': 'hsl(var(--dashboard-bg))',
+				'sidebar-bg': 'hsl(var(--sidebar-bg))',
+				'card-bg': 'hsl(var(--card-bg))',
+				'weather-card-bg': 'hsl(var(--weather-card-bg))',
+				'weather-card-secondary': 'hsl(var(--weather-card-secondary))',
+				'text-primary': 'hsl(var(--text-primary))',
+				'text-secondary': 'hsl(var(--text-secondary))',
+				'text-muted': 'hsl(var(--text-muted))',
+				'temperature-primary': 'hsl(var(--temperature-primary))',
+				'weather-accent': 'hsl(var(--weather-accent))',
+				'sunrise-color': 'hsl(var(--sunrise-color))',
+				'sunset-color': 'hsl(var(--sunset-color))',
+				
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))'
@@ -62,6 +77,14 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				}
+			},
+			boxShadow: {
+				'card': 'var(--shadow-card)',
+				'lg': 'var(--shadow-lg)'
+			},
+			backgroundImage: {
+				'gradient-primary': 'var(--gradient-primary)',
+				'gradient-weather': 'var(--gradient-weather)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
