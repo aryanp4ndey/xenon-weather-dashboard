@@ -66,6 +66,30 @@ export async function geocodeCity(city: string): Promise<GeoResult | null> {
   return null;
 }
 
+// Search for multiple matching cities for autocomplete suggestions
+export async function searchCities(query: string, limit = 5): Promise<GeoResult[]> {
+  ensureApiKey();
+  const q = query.trim();
+  if (!q) return [];
+
+  const url = `${API_BASE}/geo/1.0/direct?q=${encodeURIComponent(q)}&limit=${limit}&appid=${API_KEY}`;
+  const res = await fetch(url, { headers: { Accept: "application/json" } });
+  if (!res.ok) return [];
+  const data: GeoResult[] = await res.json();
+
+  // Deduplicate by name+state+country combination
+  const seen = new Set<string>();
+  const unique: GeoResult[] = [];
+  for (const item of data) {
+    const key = `${item.name}|${item.state ?? ''}|${item.country}`.toLowerCase();
+    if (!seen.has(key)) {
+      seen.add(key);
+      unique.push(item);
+    }
+  }
+  return unique;
+}
+
 export async function fetchCurrentWeather(lat: number, lon: number, units: "metric" | "imperial" = "metric"): Promise<CurrentWeather> {
   ensureApiKey();
   const url = `${API_BASE}/data/2.5/weather?lat=${lat}&lon=${lon}&units=${units}&appid=${API_KEY}`;
