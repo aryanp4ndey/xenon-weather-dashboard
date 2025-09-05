@@ -3,22 +3,39 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Hide scrollbar while preserving scroll functionality */
-/* For WebKit browsers (Chrome, Safari, Edge) */
+/* Accessible custom scrollbar styling — preserves scroll functionality */
+/* WebKit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
-  width: 0px;
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
   background: transparent;
 }
 
-/* For Firefox */
-html {
-  scrollbar-width: none;
+::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  border: 2px solid transparent; /* creates a pill look */
+  background-clip: content-box;
 }
 
-/* For Internet Explorer and Edge Legacy */
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Firefox */
+html {
+  scrollbar-width: thin; /* was none */
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* Ensure scrolling is enabled on all browsers */
 html, body {
-  -ms-overflow-style: none;
-  -webkit-overflow-scrolling: touch; /* Enable smooth scrolling on iOS */
+  overflow-y: auto;
+  -ms-overflow-style: auto; /* reset from none for legacy IE/Edge */
+  -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
 }
 
 @layer base {
