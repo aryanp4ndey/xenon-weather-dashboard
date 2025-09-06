@@ -1,4 +1,4 @@
-# Weather Dashboard
+# Xenon Weather Dashboard
 
 A fast, responsive weather dashboard built with Vite, React, TypeScript, Tailwind CSS, and shadcn-ui. It fetches live weather data from OpenWeatherMap and provides an engaging, mobile-friendly experience.
 
