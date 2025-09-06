@@ -67,7 +67,7 @@ const WeatherForecast = memo(() => {
   if (isLoading) {
     return (
       <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass">
-        <h3 className="text-lg sm:text-xl font-medium text-white mb-4 sm:mb-6 text-shadow">Today / Week</h3>
+        <h3 className="text-lg sm:text-xl font-medium text-foreground mb-4 sm:mb-6 text-shadow">Today / Week</h3>
         <div className="space-y-4 animate-pulse">
           {Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="flex items-center justify-between">
@@ -83,8 +83,8 @@ const WeatherForecast = memo(() => {
   if (isError || !geoData) {
     return (
       <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass">
-        <h3 className="text-lg sm:text-xl font-medium text-white mb-6 sm:mb-8 text-shadow">Today / Week</h3>
-        <p className="text-sm text-red-400">Could not find the city "{city}".</p>
+        <h3 className="text-lg sm:text-xl font-medium text-foreground mb-6 sm:mb-8 text-shadow">Today / Week</h3>
+        <p className="text-sm text-red-500">Could not find the city "{city}".</p>
       </div>
     );
   }
@@ -92,15 +92,15 @@ const WeatherForecast = memo(() => {
   if (!forecastData) {
     return (
       <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass">
-        <h3 className="text-lg sm:text-xl font-medium text-white mb-6 sm:mb-8 text-shadow">Today / Week</h3>
-        <p className="text-sm text-red-400">Failed to load forecast.</p>
+        <h3 className="text-lg sm:text-xl font-medium text-foreground mb-6 sm:mb-8 text-shadow">Today / Week</h3>
+        <p className="text-sm text-red-500">Failed to load forecast.</p>
       </div>
     );
   }
 
   return (
     <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass">
-      <h3 className="text-lg sm:text-xl font-medium text-white mb-4 sm:mb-6 text-shadow">Today / Week</h3>
+      <h3 className="text-lg sm:text-xl font-medium text-foreground mb-4 sm:mb-6 text-shadow">Today / Week</h3>
       <div className="space-y-2">
         {dailyForecast.map((item, idx) => (
           <div
@@ -108,13 +108,13 @@ const WeatherForecast = memo(() => {
             className="flex items-center justify-between glass rounded-2xl p-3 sm:p-4 glass-hover interactive-card"
           >
             <div>
-              <p className="text-xs sm:text-sm text-white/80 font-medium">{item.day}</p>
-              <p className="text-[11px] sm:text-xs text-white/60 font-medium">{item.condition}</p>
+              <p className="text-xs sm:text-sm text-foreground/80 font-medium">{item.day}</p>
+              <p className="text-[11px] sm:text-xs text-muted-foreground font-medium">{item.condition}</p>
             </div>
             <div className="flex items-center space-x-3 sm:space-x-4">
               <div className="text-xl sm:text-2xl gentle-breeze">{item.emoji}</div>
               <div className="text-right">
-                <span className="text-lg sm:text-xl font-light text-white text-shadow">{item.temp}°</span>
+                <span className="text-lg sm:text-xl font-light text-foreground text-shadow">{item.temp}°</span>
               </div>
             </div>
           </div>

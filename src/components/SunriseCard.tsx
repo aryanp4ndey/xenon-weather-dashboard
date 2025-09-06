@@ -24,7 +24,7 @@ const SunriseCard = ({ city }: SunriseCardProps) => {
   if (geoQuery.isLoading || weatherQuery.isLoading) {
     return (
       <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass">
-        <h3 className="text-lg sm:text-xl font-medium text-white mb-6 sm:mb-8 text-shadow">Sunrise & Sunset</h3>
+        <h3 className="text-lg sm:text-xl font-medium text-foreground mb-6 sm:mb-8 text-shadow">Sunrise & Sunset</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 animate-pulse">
           <div className="glass rounded-2xl p-4 sm:p-5">
             <div className="h-4 w-20 bg-foreground/10 rounded mb-3" />
@@ -42,8 +42,8 @@ const SunriseCard = ({ city }: SunriseCardProps) => {
   if (geoQuery.isError || !coords) {
     return (
       <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass">
-        <h3 className="text-lg sm:text-xl font-medium text-white mb-6 sm:mb-8 text-shadow">Sunrise & Sunset</h3>
-        <p className="text-sm text-red-400">Could not find the city "{city}".</p>
+        <h3 className="text-lg sm:text-xl font-medium text-foreground mb-6 sm:mb-8 text-shadow">Sunrise & Sunset</h3>
+        <p className="text-sm text-red-500">Could not find the city "{city}".</p>
       </div>
     );
   }
@@ -51,8 +51,8 @@ const SunriseCard = ({ city }: SunriseCardProps) => {
   if (weatherQuery.isError || !weatherQuery.data) {
     return (
       <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass">
-        <h3 className="text-lg sm:text-xl font-medium text-white mb-6 sm:mb-8 text-shadow">Sunrise & Sunset</h3>
-        <p className="text-sm text-red-400">Failed to load data.</p>
+        <h3 className="text-lg sm:text-xl font-medium text-foreground mb-6 sm:mb-8 text-shadow">Sunrise & Sunset</h3>
+        <p className="text-sm text-red-500">Failed to load data.</p>
       </div>
     );
   }
@@ -89,7 +89,7 @@ const SunriseCard = ({ city }: SunriseCardProps) => {
 
   return (
     <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass">
-      <h3 className="text-lg sm:text-xl font-medium text-white mb-6 sm:mb-8 text-shadow">Sunrise & Sunset</h3>
+      <h3 className="text-lg sm:text-xl font-medium text-foreground mb-6 sm:mb-8 text-shadow">Sunrise & Sunset</h3>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         {tiles.map((t, i) => (
@@ -99,15 +99,15 @@ const SunriseCard = ({ city }: SunriseCardProps) => {
                 <t.icon className={`h-4 w-4 bg-gradient-to-r ${t.iconGrad} bg-clip-text text-transparent`} />
               </div>
             </div>
-            <p className="text-[11px] sm:text-xs font-medium text-white/80 mb-2">{t.title}</p>
-            <p className="text-base sm:text-lg font-medium text-white text-shadow">{t.time}</p>
+            <p className="text-[11px] sm:text-xs font-medium text-muted-foreground mb-2">{t.title}</p>
+            <p className="text-base sm:text-lg font-medium text-foreground text-shadow">{t.time}</p>
           </div>
         ))}
       </div>
 
       <div className="mt-5 sm:mt-6 glass rounded-2xl p-4 sm:p-5">
-        <p className="text-[11px] sm:text-xs font-medium text-white/80 mb-1">Length of day</p>
-        <p className="text-base sm:text-lg font-medium text-white text-shadow">{length}</p>
+        <p className="text-[11px] sm:text-xs font-medium text-muted-foreground mb-1">Length of day</p>
+        <p className="text-base sm:text-lg font-medium text-foreground text-shadow">{length}</p>
       </div>
     </div>
   );

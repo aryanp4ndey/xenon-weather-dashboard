@@ -57,8 +57,8 @@ const CountriesWeather = () => {
   return (
     <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass card-entrance overflow-hidden">
       <div className="flex items-center justify-between mb-5 sm:mb-6">
-        <h3 className="text-lg sm:text-xl font-medium text-white text-shadow">Other Cities</h3>
-        <Button variant="ghost" size="sm" className="text-white/70 hover:text-white glass-hover rounded-2xl">
+        <h3 className="text-lg sm:text-xl font-medium text-foreground text-shadow">Other Cities</h3>
+        <Button variant="ghost" size="sm" className="text-foreground/70 hover:text-foreground glass-hover rounded-2xl">
           Show All
           <MoreHorizontal className="h-4 w-4 ml-2" />
         </Button>
@@ -69,10 +69,10 @@ const CountriesWeather = () => {
           if (geoQuery.isLoading || weatherQuery.isLoading) {
             return (
               <div key={label} className="relative p-4 sm:p-5 glass rounded-2xl animate-pulse">
-                <div className="h-4 w-20 bg-white/10 rounded mb-2" />
-                <div className="h-5 sm:h-6 w-24 sm:w-28 bg-white/10 rounded mb-3" />
+                <div className="h-4 w-20 bg-foreground/10 rounded mb-2" />
+                <div className="h-5 sm:h-6 w-24 sm:w-28 bg-foreground/10 rounded mb-3" />
                 <div className="flex items-center justify-end">
-                  <div className="h-7 sm:h-8 w-10 sm:w-12 bg-white/10 rounded" />
+                  <div className="h-7 sm:h-8 w-10 sm:w-12 bg-foreground/10 rounded" />
                 </div>
               </div>
             );
@@ -81,12 +81,12 @@ const CountriesWeather = () => {
           if (geoQuery.isError || weatherQuery.isError || !weatherQuery.data) {
             return (
               <div key={label} className="relative p-4 sm:p-5 glass rounded-2xl glass-hover">
-                <span className="absolute left-4 top-3 text-[10px] tracking-wide text-white/60 font-semibold">
+                <span className="absolute left-4 top-3 text-[10px] tracking-wide text-muted-foreground font-semibold">
                   {geoQuery.data?.country || "--"}
                 </span>
                 <div className="pt-3">
-                  <p className="text-base sm:text-lg font-medium text-white mb-2">{label}</p>
-                  <p className="text-xs sm:text-sm text-red-400 font-medium">No data</p>
+                  <p className="text-base sm:text-lg font-medium text-foreground mb-2">{label}</p>
+                  <p className="text-xs sm:text-sm text-red-500 font-medium">No data</p>
                 </div>
               </div>
             );
@@ -105,18 +105,18 @@ const CountriesWeather = () => {
               style={{ animationDelay: `${index * 0.08}s` }}
             >
               {/* Country code */}
-              <span className="absolute left-4 top-3 text-[10px] tracking-wide text-white/60 font-semibold">
+              <span className="absolute left-4 top-3 text-[10px] tracking-wide text-muted-foreground font-semibold">
                 {country}
               </span>
 
               <div className="pt-3 min-w-0">
-                <p className="text-lg sm:text-xl font-light text-white mb-1 text-shadow truncate">{label}</p>
-                <p className="text-[11px] sm:text-xs text-white/60 font-medium">H{tempMax}° L{tempMin}°</p>
+                <p className="text-lg sm:text-xl font-light text-foreground mb-1 text-shadow truncate">{label}</p>
+                <p className="text-[11px] sm:text-xs text-muted-foreground font-medium">H{tempMax}° L{tempMin}°</p>
               </div>
 
               {/* Temperature in bottom right */}
               <div className="flex justify-end">
-                <span className="text-2xl sm:text-3xl font-light text-white text-shadow">{temp}°</span>
+                <span className="text-2xl sm:text-3xl font-light text-foreground text-shadow">{temp}°</span>
               </div>
             </div>
           );

@@ -24,9 +24,9 @@ const WeatherForecast = React.lazy(() => import("./WeatherForecast"));
 const LoadingCard = memo(({ className = "" }: { className?: string }) => (
   <div className={`glass-card rounded-3xl p-6 sm:p-8 h-64 ${className}`}>
     <div className="animate-pulse space-y-4">
-      <div className="h-4 bg-white/10 rounded w-1/4"></div>
-      <div className="h-8 bg-white/10 rounded w-1/2"></div>
-      <div className="h-4 bg-white/10 rounded w-3/4"></div>
+      <div className="h-4 bg-foreground/10 rounded w-1/4"></div>
+      <div className="h-8 bg-foreground/10 rounded w-1/2"></div>
+      <div className="h-4 bg-foreground/10 rounded w-3/4"></div>
     </div>
   </div>
 ));
@@ -34,13 +34,18 @@ const LoadingCard = memo(({ className = "" }: { className?: string }) => (
 LoadingCard.displayName = 'LoadingCard';
 
 const WeatherDashboardContent = memo(() => {
-  const { theme, setTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { city, setCity, weatherData, geoData, isLoading, isError } = useWeather();
   const [suggestions, setSuggestions] = useState<GeoResult[]>([]);
   const [openSuggest, setOpenSuggest] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
   const searchContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSearchCommit = useCallback(() => {
     const trimmed = searchQuery.trim();
@@ -128,8 +133,9 @@ const WeatherDashboardContent = memo(() => {
   }, []);
 
   const handleThemeToggle = useCallback(() => {
-    setTheme(theme === "dark" ? "light" : "dark");
-  }, [theme, setTheme]);
+    const current = resolvedTheme ?? theme;
+    setTheme(current === "dark" ? "light" : "dark");
+  }, [resolvedTheme, theme, setTheme]);
 
   let localDateTimeText = "";
   if (isLoading) {
@@ -153,26 +159,26 @@ const WeatherDashboardContent = memo(() => {
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6 mb-8 sm:mb-10 lg:mb-12">
             <div className="transition-all duration-300 ease-out">
-              <p className="text-3xl sm:text-5xl font-light text-white transition-all duration-300 break-words">{city}</p>
+              <p className="text-3xl sm:text-5xl font-light text-foreground transition-all duration-300 break-words">{city}</p>
               {localDateTimeText && (
-                <p className="text-white/70 text-sm sm:text-base mt-2 transition-opacity duration-300">{localDateTimeText}</p>
+                <p className="text-muted-foreground text-sm sm:text-base mt-2 transition-opacity duration-300">{localDateTimeText}</p>
               )}
             </div>
             
             <div className="flex w-full sm:w-auto items-center sm:space-x-6 gap-3">
               {/* Search */}
               <div className="relative group flex-1" ref={searchContainerRef}>
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/50 h-5 w-5 transition-all duration-300 group-focus-within:text-white/80" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 transition-all duration-300 group-focus-within:text-foreground/80" />
                 <Input
                   placeholder="Search your location"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
                   onFocus={() => { if (suggestions.length) setOpenSuggest(true); }}
-                  className="pl-12 w-full sm:w-80 h-12 sm:h-14 glass-card border-0 placeholder:text-white/50 text-white rounded-3xl font-medium text-base transition-all duration-300 focus:scale-[1.02] sm:focus:scale-105 focus:shadow-2xl"
+                  className="pl-12 w-full sm:w-80 h-12 sm:h-14 glass-card border-0 placeholder:text-muted-foreground text-foreground rounded-3xl font-medium text-base transition-all duration-300 focus:scale-[1.02] sm:focus:scale-105 focus:shadow-2xl"
                 />
                 {openSuggest && suggestions.length > 0 && (
-                  <div className="absolute z-50 mt-2 w-full max-h-72 overflow-auto rounded-2xl glass-card backdrop-blur border border-white/10 shadow-2xl">
+                  <div className="absolute z-50 mt-2 w-full max-h-72 overflow-auto rounded-2xl glass-card backdrop-blur border border-border shadow-2xl">
                     <ul role="listbox" aria-label="City suggestions" className="py-2">
                       {suggestions.map((s, idx) => {
                         const label = `${s.name}${s.state ? ", " + s.state : ""}, ${s.country}`;
@@ -184,10 +190,10 @@ const WeatherDashboardContent = memo(() => {
                             aria-selected={active}
                             onMouseEnter={() => setHighlightIndex(idx)}
                             onMouseDown={(e) => { e.preventDefault(); handleSelectSuggestion(s); }}
-                            className={`px-4 py-2 cursor-pointer text-sm text-white/90 flex items-center justify-between ${active ? 'bg-white/10' : 'hover:bg-white/10'}`}
+                            className={`px-4 py-2 cursor-pointer text-sm text-foreground flex items-center justify-between ${active ? 'bg-foreground/10' : 'hover:bg-foreground/10'}`}
                           >
                             <span>{label}</span>
-                            <span className="text-xs text-white/50">{s.lat.toFixed(2)}, {s.lon.toFixed(2)}</span>
+                            <span className="text-xs text-muted-foreground">{s.lat.toFixed(2)}, {s.lon.toFixed(2)}</span>
                           </li>
                         );
                       })}
@@ -201,14 +207,19 @@ const WeatherDashboardContent = memo(() => {
                 variant="ghost"
                 size="icon"
                 onClick={handleThemeToggle}
-                className="h-12 w-12 sm:h-14 sm:w-14 glass-hover rounded-3xl text-white/80 hover:text-white transition-all duration-300 hover:scale-110"
+                className="h-12 w-12 sm:h-14 sm:w-14 glass-hover rounded-3xl text-foreground/80 hover:text-foreground transition-all duration-300 hover:scale-110"
+                aria-label="Toggle theme"
               >
-                {theme === "dark" ? <Sun className="h-6 w-6" /> : <Moon className="h-6 w-6" />}
+                {mounted && (resolvedTheme ?? theme) === "dark" ? (
+                  <Sun className="h-6 w-6" />
+                ) : (
+                  <Moon className="h-6 w-6" />
+                )}
               </Button>
               
               {/* User Avatar */}
-              <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-3xl bg-white/10 flex items-center justify-center shadow-glass transition-all duration-300 hover:scale-110 hover:bg-white/20 cursor-pointer">
-                <User className="h-6 w-6 text-white" />
+              <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-3xl bg-foreground/5 flex items-center justify-center shadow-glass transition-all duration-300 hover:scale-110 hover:bg-foreground/10 cursor-pointer">
+                <User className="h-6 w-6 text-foreground" />
               </div>
             </div>
           </div>
