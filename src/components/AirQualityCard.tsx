@@ -92,7 +92,7 @@ export const AirQualityCard = () => {
           
           <div className="relative h-2 bg-white/10 rounded-full mx-1 overflow-visible shadow-inner">
             <div 
-              className="absolute left-0 h-full bg-gradient-to-r from-green-500 via-yellow-400 via-orange-500 to-red-600 rounded-full transition-all duration-1000 ease-out z-0" 
+              className="absolute left-0 h-full bg-gradient-to-r from-green-500 via-yellow-400 to-red-600 rounded-full transition-all duration-1000 ease-out z-0" 
               style={{ width: `${aqiInfo.percent}%` }}
             ></div>
             
