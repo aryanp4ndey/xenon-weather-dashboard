@@ -1,50 +1,41 @@
 import React, { useState, useCallback, memo, useEffect, useRef } from "react";
 import { format } from "date-fns";
-import { Search, User, Sun, Moon } from "lucide-react";
+import { Search, Bell } from "lucide-react";
 import { useTheme } from "next-themes";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { WeatherProvider, useWeather } from "@/contexts/WeatherContext";
-import { searchCities, GeoResult } from "@/lib/weatherApi";
+import { searchCities, GeoResult, reverseGeocode } from "@/lib/weatherApi";
 
-// Lazy load components for better performance with preloading
-const WeatherCard = React.lazy(() => 
-  import("./WeatherCard").then(module => {
-    // Preload related components
-    import("./WeatherHighlights");
-    import("./WeatherForecast");
-    return module;
-  })
-);
-const WeatherHighlights = React.lazy(() => import("./WeatherHighlights"));
-const CountriesWeather = React.lazy(() => import("./CountriesWeather"));
-const WeatherForecast = React.lazy(() => import("./WeatherForecast"));
-
-// Optimized loading component
-const LoadingCard = memo(({ className = "" }: { className?: string }) => (
-  <div className={`glass-card rounded-3xl p-6 sm:p-8 h-64 ${className}`}>
-    <div className="animate-pulse space-y-4">
-      <div className="h-4 bg-foreground/10 rounded w-1/4"></div>
-      <div className="h-8 bg-foreground/10 rounded w-1/2"></div>
-      <div className="h-4 bg-foreground/10 rounded w-3/4"></div>
-    </div>
-  </div>
-));
-
-LoadingCard.displayName = 'LoadingCard';
+import { Sidebar } from "./Sidebar";
+import WeatherCard from "./WeatherCard";
+import { AirQualityCard } from "./AirQualityCard";
+import { TomorrowCard } from "./TomorrowCard";
+import SunriseCard from "./SunriseCard";
+import CountriesWeather from "./CountriesWeather";
 
 const WeatherDashboardContent = memo(() => {
   const { theme, resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const { city, setCity, weatherData, geoData, isLoading, isError } = useWeather();
-  const [suggestions, setSuggestions] = useState<GeoResult[]>([]);
+  const { city, setCity, suggestions, setSuggestions } = useWeather() as any; 
+  // We'll handle search locally if context doesn't expose it
+  const [localSuggestions, setLocalSuggestions] = useState<GeoResult[]>([]);
   const [openSuggest, setOpenSuggest] = useState(false);
-  const [highlightIndex, setHighlightIndex] = useState(-1);
-  const searchContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setMounted(true);
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        try {
+          const res = await reverseGeocode(position.coords.latitude, position.coords.longitude);
+          if (res) {
+            setCity(`${res.name}, ${res.country}`);
+          }
+        } catch (error) {
+          console.error("Geolocation reverse geocode failed", error);
+        }
+      });
+    }
   }, []);
 
   const handleSearchCommit = useCallback(() => {
@@ -53,213 +44,124 @@ const WeatherDashboardContent = memo(() => {
   }, [searchQuery, setCity]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setOpenSuggest(true);
-      setHighlightIndex((prev) => Math.min(prev + 1, Math.max(0, suggestions.length - 1)));
-      return;
-    }
-    if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setHighlightIndex((prev) => Math.max(prev - 1, 0));
-      return;
-    }
     if (e.key === 'Enter') {
-      if (openSuggest && highlightIndex >= 0 && highlightIndex < suggestions.length) {
-        const sel = suggestions[highlightIndex];
-        const label = `${sel.name}${sel.state ? ", " + sel.state : ""}, ${sel.country}`;
-        setSearchQuery(label);
-        setCity(label);
-        setOpenSuggest(false);
-        setHighlightIndex(-1);
-      } else {
-        handleSearchCommit();
-      }
-      return;
+      handleSearchCommit();
     }
-    if (e.key === 'Escape') {
-      setOpenSuggest(false);
-      setHighlightIndex(-1);
-      return;
-    }
-  }, [suggestions, openSuggest, highlightIndex, handleSearchCommit, setCity]);
-
-  const handleSelectSuggestion = useCallback((sel: GeoResult) => {
-    const label = `${sel.name}${sel.state ? ", " + sel.state : ""}, ${sel.country}`;
-    setSearchQuery(label);
-    setCity(label);
-    setOpenSuggest(false);
-    setHighlightIndex(-1);
-  }, [setCity]);
-
-  useEffect(() => {
-    const q = searchQuery.trim();
-    if (!q) {
-      setSuggestions([]);
-      setOpenSuggest(false);
-      setHighlightIndex(-1);
-      return;
-    }
-    let alive = true;
-    const ctrl = new AbortController();
-    const t = setTimeout(async () => {
-      try {
-        const results = await searchCities(q, 7);
-        if (!alive) return;
-        setSuggestions(results);
-        setOpenSuggest(results.length > 0);
-        setHighlightIndex(results.length ? 0 : -1);
-      } catch {
-        /* ignore */
-      }
-    }, 200);
-    return () => {
-      alive = false;
-      ctrl.abort();
-      clearTimeout(t);
-    };
-  }, [searchQuery]);
-
-  useEffect(() => {
-    const onDocClick = (e: MouseEvent) => {
-      if (!searchContainerRef.current) return;
-      if (!searchContainerRef.current.contains(e.target as Node)) {
-        setOpenSuggest(false);
-        setHighlightIndex(-1);
-      }
-    };
-    document.addEventListener('mousedown', onDocClick);
-    return () => document.removeEventListener('mousedown', onDocClick);
-  }, []);
+  }, [handleSearchCommit]);
 
   const handleThemeToggle = useCallback(() => {
     const current = resolvedTheme ?? theme;
     setTheme(current === "dark" ? "light" : "dark");
   }, [resolvedTheme, theme, setTheme]);
 
-  let localDateTimeText = "";
-  if (isLoading) {
-    localDateTimeText = "Loading local time...";
-  } else if (isError || !weatherData) {
-    localDateTimeText = "";
-  } else {
-    const targetOffsetSec: number = weatherData?.timezone ?? 0;
-    const browserOffsetSec: number = -new Date().getTimezoneOffset() * 60;
-    const deltaSec = targetOffsetSec - browserOffsetSec;
-    const adjustedMs = Date.now() + deltaSec * 1000;
-    const targetLocalDate = new Date(adjustedMs);
-    localDateTimeText = format(targetLocalDate, "eeee, MMM d • hh:mm a");
-  }
+  // Compute local time
+  const [localTime, setLocalTime] = useState("");
+  const { weatherData } = useWeather();
+  
+  useEffect(() => {
+    const updateTime = () => {
+      if (!weatherData) return;
+      const targetOffsetSec: number = weatherData?.timezone ?? 0;
+      const browserOffsetSec: number = -new Date().getTimezoneOffset() * 60;
+      const deltaSec = targetOffsetSec - browserOffsetSec;
+      const adjustedMs = Date.now() + deltaSec * 1000;
+      const targetLocalDate = new Date(adjustedMs);
+      setLocalTime(format(targetLocalDate, "EEEE, d MMM yyyy | hh:mm a"));
+    };
+    
+    updateTime();
+    const interval = setInterval(updateTime, 60000); // Update every minute
+    return () => clearInterval(interval);
+  }, [weatherData]);
 
   return (
-    <div className="min-h-screen bg-background transition-colors duration-300 ease-out overflow-x-hidden">
-      <div className="w-full">
-        {/* Main Content */}
-        <div className="w-full p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6 mb-8 sm:mb-10 lg:mb-12">
-            <div className="transition-all duration-300 ease-out">
-              <p className="text-3xl sm:text-5xl font-light text-foreground transition-all duration-300 break-words">{city}</p>
-              {localDateTimeText && (
-                <p className="text-muted-foreground text-sm sm:text-base mt-2 transition-opacity duration-300">{localDateTimeText}</p>
-              )}
+    <div className="flex min-h-screen bg-[#f8f9fa] dark:bg-[#111315] text-gray-800 dark:text-gray-100 font-sans overflow-hidden">
+      {/* Sidebar (Left) */}
+      <div className="hidden md:block w-24 flex-shrink-0">
+        <Sidebar />
+      </div>
+
+      {/* Main Content (Center) */}
+      <div className="flex-1 p-8 overflow-y-auto custom-scrollbar">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <img src="/images/avatar.png" alt="User Avatar" className="w-14 h-14 rounded-2xl object-cover bg-orange-100 dark:bg-gray-800" />
+            <div>
+              <h1 className="text-xl text-gray-500 font-medium leading-tight">Hello,</h1>
+              <h2 className="text-3xl font-bold leading-tight">User</h2>
+              {localTime && <p className="text-sm text-gray-400 font-medium mt-1">{localTime}</p>}
             </div>
-            
-            <div className="flex w-full sm:w-auto items-center sm:space-x-6 gap-3">
-              {/* Search */}
-              <div className="relative group flex-1" ref={searchContainerRef}>
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 transition-all duration-300 group-focus-within:text-foreground/80" />
+          </div>
+          
+          <div className="flex flex-1 max-w-md mx-8 relative">
+             <div className="relative w-full">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <Input
-                  placeholder="Search your location"
+                  placeholder="Search anything ..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  onFocus={() => { if (suggestions.length) setOpenSuggest(true); }}
-                  className="pl-12 w-full sm:w-80 h-12 sm:h-14 glass-card border-0 placeholder:text-muted-foreground text-foreground rounded-3xl font-medium text-base transition-all duration-300 focus:scale-[1.02] sm:focus:scale-105 focus:shadow-2xl"
+                  className="pl-12 w-full h-12 bg-white dark:bg-gray-800 border-none rounded-2xl shadow-sm focus:ring-2 focus:ring-orange-500"
                 />
-                {openSuggest && suggestions.length > 0 && (
-                  <div className="absolute z-50 mt-2 w-full max-h-72 overflow-auto rounded-2xl glass-card backdrop-blur border border-border shadow-2xl">
-                    <ul role="listbox" aria-label="City suggestions" className="py-2">
-                      {suggestions.map((s, idx) => {
-                        const label = `${s.name}${s.state ? ", " + s.state : ""}, ${s.country}`;
-                        const active = idx === highlightIndex;
-                        return (
-                          <li
-                            key={`${s.name}-${s.state ?? ''}-${s.country}-${idx}`}
-                            role="option"
-                            aria-selected={active}
-                            onMouseEnter={() => setHighlightIndex(idx)}
-                            onMouseDown={(e) => { e.preventDefault(); handleSelectSuggestion(s); }}
-                            className={`px-4 py-2 cursor-pointer text-sm text-foreground flex items-center justify-between ${active ? 'bg-foreground/10' : 'hover:bg-foreground/10'}`}
-                          >
-                            <span>{label}</span>
-                            <span className="text-xs text-muted-foreground">{s.lat.toFixed(2)}, {s.lon.toFixed(2)}</span>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                )}
-              </div>
-              
-              {/* Theme Toggle */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleThemeToggle}
-                className="h-12 w-12 sm:h-14 sm:w-14 glass-hover rounded-3xl text-foreground/80 hover:text-foreground transition-all duration-300 hover:scale-110"
-                aria-label="Toggle theme"
-              >
-                {mounted && (resolvedTheme ?? theme) === "dark" ? (
-                  <Sun className="h-6 w-6" />
-                ) : (
-                  <Moon className="h-6 w-6" />
-                )}
-              </Button>
-              
-              {/* User Avatar */}
-              <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-3xl bg-foreground/5 flex items-center justify-center shadow-glass transition-all duration-300 hover:scale-110 hover:bg-foreground/10 cursor-pointer">
-                <User className="h-6 w-6 text-foreground" />
-              </div>
-            </div>
+             </div>
           </div>
-
-          {/* Weather Content Grid */}
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8 mb-6 sm:mb-8">
-            {/* Main Weather Card */}
-            <div className="xl:col-span-2 transition-all duration-300">
-              <React.Suspense fallback={<LoadingCard />}>
-                <WeatherCard />
-              </React.Suspense>
-            </div>
-            
-            {/* Today's Highlights */}
-            <div className="transition-all duration-300">
-              <React.Suspense fallback={<LoadingCard />}>
-                <WeatherHighlights />
-              </React.Suspense>
-            </div>
-          </div>
-
-          {/* Bottom Section */}
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 sm:gap-8">
-            {/* Left: Forecast */}
-            <div className="xl:col-span-2">
-              <div className="transition-all duration-300">
-                <React.Suspense fallback={<LoadingCard />}>
-                  <WeatherForecast />
-                </React.Suspense>
-              </div>
-            </div>
-
-            {/* Right: Other Cities */}
-            <div className="transition-all duration-300">
-              <React.Suspense fallback={<LoadingCard />}>
-                <CountriesWeather />
-              </React.Suspense>
-            </div>
-          </div>
+          
+          <button 
+            onClick={handleThemeToggle}
+            className="w-12 h-12 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all"
+          >
+            <Bell className="h-5 w-5 text-gray-500" />
+          </button>
         </div>
+
+        {/* Top Cards */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+           <WeatherCard />
+           <AirQualityCard />
+        </div>
+
+        {/* Bottom Section */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+           <div className="bg-white dark:bg-gray-800 rounded-[32px] p-6 shadow-sm">
+             <div className="flex items-center justify-between mb-6">
+                <h3 className="font-bold text-lg">How's the temperature today?</h3>
+             </div>
+             {/* Chart Placeholder */}
+             <div className="h-40 flex items-end justify-between px-4 pb-4 border-b border-orange-200 relative">
+                {/* SVG Curve placeholder */}
+                <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+                   <path d="M0,80 Q100,20 200,80 T400,60" fill="none" stroke="#f97316" strokeWidth="2" />
+                </svg>
+                <div className="flex flex-col items-center z-10">
+                   <span className="text-xl font-bold mb-8">20°</span>
+                   <span className="text-xs text-gray-400">Morning</span>
+                </div>
+                <div className="flex flex-col items-center z-10">
+                   <span className="text-xl font-bold mb-16">34°</span>
+                   <span className="text-xs text-gray-400">Afternoon</span>
+                </div>
+                <div className="flex flex-col items-center z-10">
+                   <span className="text-xl font-bold mb-12">28°</span>
+                   <span className="text-xs text-gray-400">Evening</span>
+                </div>
+                <div className="flex flex-col items-center z-10">
+                   <span className="text-xl font-bold mb-4">22°</span>
+                   <span className="text-xs text-gray-400">Night</span>
+                </div>
+             </div>
+           </div>
+           <TomorrowCard />
+        </div>
+      </div>
+
+      {/* Right Sidebar (Right) */}
+      <div className="hidden lg:block w-[350px] bg-white dark:bg-gray-800 p-8 border-l border-gray-100 dark:border-gray-800 overflow-y-auto">
+         <SunriseCard />
+         <div className="mt-8">
+           <h3 className="font-bold text-lg mb-4">Weather Prediction</h3>
+           <CountriesWeather />
+         </div>
       </div>
     </div>
   );
@@ -268,7 +170,7 @@ const WeatherDashboardContent = memo(() => {
 WeatherDashboardContent.displayName = 'WeatherDashboardContent';
 
 const WeatherDashboard = () => {
-  const [city, setCity] = useState<string>("Lucknow");
+  const [city, setCity] = useState<string>("Banten");
 
   return (
     <WeatherProvider city={city} setCity={setCity}>

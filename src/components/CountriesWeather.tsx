@@ -1,127 +1,35 @@
-import { MoreHorizontal } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { geocodeCity, fetchCurrentWeather } from "@/lib/weatherApi";
-import { getWeatherEmoji, isDayTime } from "@/lib/weatherUtils";
-import { useState, useEffect } from "react";
-
-// Extended list of cities for rotation
-const ALL_CITIES: { label: string; query: string }[] = [
-  { label: "New York", query: "New York,US" },
-  { label: "Dubai", query: "Dubai,AE" },
-  { label: "Shanghai", query: "Shanghai,CN" },
-  { label: "Madrid", query: "Madrid,ES" },
-  { label: "Tokyo", query: "Tokyo,JP" },
-  { label: "London", query: "London,GB" },
-  { label: "Paris", query: "Paris,FR" },
-  { label: "Sydney", query: "Sydney,AU" },
-  { label: "Mumbai", query: "Mumbai,IN" },
-  { label: "São Paulo", query: "São Paulo,BR" },
-  { label: "Cairo", query: "Cairo,EG" },
-  { label: "Moscow", query: "Moscow,RU" },
-];
+import React from "react";
+import { Cloud, Sun, CloudRain, CalendarDays } from "lucide-react";
 
 const CountriesWeather = () => {
-  const [currentCitySet, setCurrentCitySet] = useState(0);
-  
-  // Rotate cities every 5 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentCitySet(prev => (prev + 1) % (ALL_CITIES.length / 4));
-    }, 5000);
-    
-    return () => clearInterval(interval);
-  }, []);
-
-  // Get current 4 cities to display
-  const startIndex = currentCitySet * 4;
-  const currentCities = ALL_CITIES.slice(startIndex, startIndex + 4);
-
-  const weatherQueries = currentCities.map(({ label, query }) => {
-    const geoQuery = useQuery({
-      queryKey: ["geo", query],
-      queryFn: () => geocodeCity(query),
-    });
-
-    const coords = geoQuery.data ? { lat: geoQuery.data.lat, lon: geoQuery.data.lon } : null;
-
-    const weatherQuery = useQuery({
-      queryKey: ["current", coords?.lat, coords?.lon],
-      queryFn: () => fetchCurrentWeather(coords!.lat, coords!.lon, "metric"),
-      enabled: !!coords,
-    });
-
-    return { label, geoQuery, weatherQuery };
-  });
+  // Static prediction list to match design
+  const predictions = [
+    { date: "November 10", condition: "Cloudy", temp: "26° / 19°", icon: <Cloud className="text-gray-400 dark:text-gray-300 w-8 h-8" /> },
+    { date: "November 11", condition: "Bright", temp: "26° / 20°", icon: <Sun className="text-orange-400 w-8 h-8 fill-orange-400" /> },
+    { date: "November 12", condition: "Rainy", temp: "24° / 18°", icon: <CloudRain className="text-blue-500 w-8 h-8" /> },
+  ];
 
   return (
-    <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass card-entrance overflow-hidden">
-      <div className="flex items-center justify-between mb-5 sm:mb-6">
-        <h3 className="text-lg sm:text-xl font-medium text-foreground text-shadow">Other Cities</h3>
-        <Button variant="ghost" size="sm" className="text-foreground/70 hover:text-foreground glass-hover rounded-2xl">
-          Show All
-          <MoreHorizontal className="h-4 w-4 ml-2" />
-        </Button>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 w-full overflow-hidden">
-        {weatherQueries.map(({ label, geoQuery, weatherQuery }, index) => {
-          if (geoQuery.isLoading || weatherQuery.isLoading) {
-            return (
-              <div key={label} className="relative p-4 sm:p-5 glass rounded-2xl animate-pulse">
-                <div className="h-4 w-20 bg-foreground/10 rounded mb-2" />
-                <div className="h-5 sm:h-6 w-24 sm:w-28 bg-foreground/10 rounded mb-3" />
-                <div className="flex items-center justify-end">
-                  <div className="h-7 sm:h-8 w-10 sm:w-12 bg-foreground/10 rounded" />
-                </div>
+    <div className="flex flex-col gap-4">
+      {predictions.map((p, i) => (
+        <div key={i} className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+           <div className="flex items-center gap-4">
+              <div className="p-2 bg-gray-50 dark:bg-[#1a1f26] rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/50">{p.icon}</div>
+              <div>
+                 <p className="text-[11px] text-gray-400 font-medium">{p.date}</p>
+                 <p className="font-bold text-gray-800 dark:text-gray-100 text-sm">{p.condition}</p>
               </div>
-            );
-          }
-
-          if (geoQuery.isError || weatherQuery.isError || !weatherQuery.data) {
-            return (
-              <div key={label} className="relative p-4 sm:p-5 glass rounded-2xl glass-hover">
-                <span className="absolute left-4 top-3 text-[10px] tracking-wide text-muted-foreground font-semibold">
-                  {geoQuery.data?.country || "--"}
-                </span>
-                <div className="pt-3">
-                  <p className="text-base sm:text-lg font-medium text-foreground mb-2">{label}</p>
-                  <p className="text-xs sm:text-sm text-red-500 font-medium">No data</p>
-                </div>
-              </div>
-            );
-          }
-
-          const w = weatherQuery.data;
-          const temp = Math.round(w.main?.temp ?? 0);
-          const tempMin = Math.round(w.main?.temp_min ?? 0);
-          const tempMax = Math.round(w.main?.temp_max ?? temp);
-          const country = geoQuery.data?.country || "--";
-
-          return (
-            <div
-              key={label}
-              className="relative p-4 sm:p-5 glass rounded-2xl glass-hover interactive-card overflow-hidden flex flex-col justify-between min-h-[110px] sm:min-h-[120px] min-w-0"
-              style={{ animationDelay: `${index * 0.08}s` }}
-            >
-              {/* Country code */}
-              <span className="absolute left-4 top-3 text-[10px] tracking-wide text-muted-foreground font-semibold">
-                {country}
-              </span>
-
-              <div className="pt-3 min-w-0">
-                <p className="text-lg sm:text-xl font-light text-foreground mb-1 text-shadow truncate">{label}</p>
-                <p className="text-[11px] sm:text-xs text-muted-foreground font-medium">H{tempMax}° L{tempMin}°</p>
-              </div>
-
-              {/* Temperature in bottom right */}
-              <div className="flex justify-end">
-                <span className="text-2xl sm:text-3xl font-light text-foreground text-shadow">{temp}°</span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+           </div>
+           <div className="font-semibold text-gray-600 dark:text-gray-300 text-sm">
+              {p.temp}
+           </div>
+        </div>
+      ))}
+      
+      <button className="mt-4 bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white py-4 rounded-[20px] font-bold shadow-[0_8px_16px_rgba(249,115,22,0.3)] transition-all flex items-center justify-center gap-3">
+         <CalendarDays className="w-5 h-5 opacity-90" />
+         Next 5 Days
+      </button>
     </div>
   );
 };

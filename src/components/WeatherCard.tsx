@@ -1,37 +1,14 @@
 import React, { useMemo, memo } from "react";
-import { MapPin } from "lucide-react";
-import { format } from "date-fns";
+import { Cloud, Wind, Droplets, Eye } from "lucide-react";
 import { useWeather } from "@/contexts/WeatherContext";
-import { getWeatherEmoji, getWeatherBackground, isDayTime, getTimeBasedGreeting, getWeatherAnimation } from "@/lib/weatherUtils";
 
 const WeatherCard = memo(() => {
-  const { geoData, weatherData, isLoading, isError, city } = useWeather();
-  const today = useMemo(() => new Date(), []);
+  const { weatherData, isLoading, isError } = useWeather();
 
-  if (isLoading) {
+  if (isLoading || isError || !weatherData) {
     return (
-      <div className="glass-card rounded-3xl p-6 sm:p-8 h-full shadow-glass card-entrance">
-        <div className="animate-pulse space-y-4">
-          <div className="h-4 w-32 sm:w-40 bg-white/10 rounded" />
-          <div className="h-8 w-48 sm:w-64 bg-white/10 rounded" />
-          <div className="h-24 sm:h-32 w-full bg-white/10 rounded" />
-        </div>
-      </div>
-    );
-  }
-
-  if (isError || !geoData) {
-    return (
-      <div className="glass-card rounded-3xl p-6 sm:p-8 h-full shadow-glass card-entrance">
-        <p className="text-sm text-red-400">Could not find the city "{city}".</p>
-      </div>
-    );
-  }
-
-  if (!weatherData) {
-    return (
-      <div className="glass-card rounded-3xl p-6 sm:p-8 h-full shadow-glass card-entrance">
-        <p className="text-sm text-red-400">Failed to load weather data.</p>
+      <div className="glass-card rounded-[32px] p-6 sm:p-8 h-[250px] animate-pulse">
+        <div className="h-4 bg-foreground/10 rounded w-1/4 mb-4"></div>
       </div>
     );
   }
@@ -39,66 +16,89 @@ const WeatherCard = memo(() => {
   const w = weatherData;
   const temp = Math.round(w.main?.temp ?? 0);
   const tempMin = Math.round(w.main?.temp_min ?? 0);
-  const tempMax = Math.round(w.main?.temp_max ?? 0);
-  const desc = w.weather?.[0]?.description ?? "";
-  const locationLabel = `${geoData?.name || city}${geoData?.country ? ", " + geoData.country : ""}`;
+  const desc = w.weather?.[0]?.description ?? "Clear";
+  const mainCondition = w.weather?.[0]?.main?.toLowerCase() || 'clear';
   
-  const isDay = isDayTime(w.sys?.sunrise ?? 0, w.sys?.sunset ?? 0, w.timezone ?? 0);
-  const weatherEmoji = getWeatherEmoji(desc, isDay);
-  const weatherBg = getWeatherBackground(desc, isDay);
-  const animationClass = getWeatherAnimation(desc);
-  const greeting = getTimeBasedGreeting();
+  const pressure = w.main?.pressure ?? 0;
+  const humidity = w.main?.humidity ?? 0;
+  const visibility = (w.visibility ?? 0) / 1000;
+
+  // Determine if it is day or night
+  const isDay = () => {
+    if (!w.sys?.sunrise || !w.sys?.sunset) return true;
+    const nowSec = Math.floor(Date.now() / 1000);
+    // Adjusted current time for the location
+    const targetOffsetSec: number = w.timezone ?? 0;
+    const browserOffsetSec: number = -new Date().getTimezoneOffset() * 60;
+    const deltaSec = targetOffsetSec - browserOffsetSec;
+    const localNow = nowSec + deltaSec;
+    const localSunrise = w.sys.sunrise + deltaSec;
+    const localSunset = w.sys.sunset + deltaSec;
+    return localNow >= localSunrise && localNow < localSunset;
+  };
+
+  const dayTime = isDay();
+
+  // Determine background image based on weather condition
+  let bgImage = "url('/images/sunny.png')";
+  if (!dayTime) {
+    bgImage = "url('/images/night.png')";
+  } else if (mainCondition.includes('rain') || mainCondition.includes('drizzle') || mainCondition.includes('thunderstorm')) {
+    bgImage = "url('/images/rainy.png')";
+  } else if (mainCondition.includes('cloud') && w.clouds?.all > 50) {
+    bgImage = "url('/images/cloudy.png')";
+  }
 
   return (
-    <div 
-      className="glass-card rounded-3xl p-6 sm:p-8 h-full shadow-glass interactive-card relative overflow-hidden card-entrance"
-      style={{ background: weatherBg }}
-    >
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 opacity-20">
-        <div className={`w-full h-full ${animationClass}`} />
-      </div>
+    <div className="relative rounded-[32px] overflow-hidden h-[250px] shadow-lg group interactive-card">
+      {/* Background Image - scaled up slightly to hide any generated borders */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center z-0 transition-transform duration-700 group-hover:scale-110 scale-105"
+        style={{ backgroundImage: bgImage }}
+      ></div>
       
+      {/* Dark overlay for text readability in dark mode */}
+      <div className="absolute inset-0 bg-black/10 dark:bg-black/30 z-0"></div>
+
       {/* Content */}
-      <div className="relative z-10">
-        <div className="flex items-center text-white/80 mb-4">
-          <MapPin className="h-4 w-4 mr-2" />
-          <span className="text-sm font-medium text-shadow">{locationLabel}</span>
-          <span className="ml-4 text-sm font-medium">°C</span>
-        </div>
+      <div className="relative z-10 p-6 flex flex-col h-full justify-between drop-shadow-md">
         
-        <div className="mb-6 sm:mb-8">
-          <h2 className="text-2xl sm:text-3xl font-light text-white mb-2 text-shadow">{format(today, "EEEE")}</h2>
-          <p className="text-white/70 text-xs sm:text-sm font-medium">{format(today, "dd MMM, yyyy")}</p>
-          <p className="text-white/60 text-[11px] sm:text-xs font-medium mt-1">{greeting}</p>
-        </div>
-
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center">
-            <div className="w-28 h-28 sm:w-36 sm:h-36 flex items-center justify-center">
-              <div className={`weather-emoji ${animationClass}`}>
-                {weatherEmoji}
-              </div>
-            </div>
+        {/* Top section */}
+        <div className="flex items-center gap-2">
+           <div className="bg-white/20 p-2 rounded-full backdrop-blur-md text-white">
+            <Cloud size={20} />
           </div>
-
-          <div className="text-right">
-            <div className="text-6xl sm:text-7xl font-extralight text-white mb-2 sm:mb-3 text-shadow">
-              {temp}°
-            </div>
-            <div className="text-white/70 text-lg sm:text-xl font-light mb-4 sm:mb-6">
-              {tempMin}° / {tempMax}°C
-            </div>
-            <div>
-              <p className="text-lg sm:text-xl font-medium text-white mb-1 sm:mb-2 text-shadow">
-                {desc ? desc.charAt(0).toUpperCase() + desc.slice(1) : ""}
-              </p>
-              <p className="text-white/60 text-xs sm:text-sm font-medium">
-                feels like {Math.round(w.main?.feels_like ?? temp)}°
-              </p>
-            </div>
+          <div>
+            <h3 className="font-semibold text-lg leading-tight text-white">Weather</h3>
+            <p className="text-xs text-white/80 font-medium">What's the weather.</p>
           </div>
         </div>
+
+        {/* Middle section: Temperature */}
+        <div className="mt-auto mb-4 text-white">
+          <div className="flex items-baseline gap-3">
+            <span className="text-5xl sm:text-6xl font-bold">{temp}°C</span>
+            <span className="bg-white/20 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full">{tempMin}°C</span>
+          </div>
+          <p className="text-sm font-medium mt-1 capitalize">{desc}</p>
+        </div>
+
+        {/* Bottom section: Metrics Pills */}
+        <div className="flex gap-2 sm:gap-3 mt-2 overflow-hidden w-full">
+          <div className="bg-[#1c2128]/90 backdrop-blur-md text-white px-5 py-3 rounded-2xl flex flex-col shadow-lg flex-1 min-w-0">
+             <span className="text-[10px] text-gray-400 font-medium">Pressure</span>
+             <span className="font-bold text-sm truncate">{pressure}mb</span>
+          </div>
+          <div className="bg-[#a3e635]/90 backdrop-blur-md text-lime-950 px-5 py-3 rounded-2xl flex flex-col shadow-lg flex-1 min-w-0">
+             <span className="text-[10px] font-medium opacity-80">Visibility</span>
+             <span className="font-bold text-sm truncate">{visibility.toFixed(1)} km</span>
+          </div>
+          <div className="bg-white/90 backdrop-blur-md text-gray-800 px-5 py-3 rounded-2xl flex flex-col shadow-lg flex-1 min-w-0">
+             <span className="text-[10px] text-gray-500 font-medium">Humidity</span>
+             <span className="font-bold text-sm truncate">{humidity}%</span>
+          </div>
+        </div>
+
       </div>
     </div>
   );

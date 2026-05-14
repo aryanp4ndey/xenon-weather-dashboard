@@ -1,113 +1,59 @@
-import { useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { geocodeCity, fetchCurrentWeather } from "@/lib/weatherApi";
-import { Sun, Sunset } from "lucide-react";
+import React from "react";
+import { Sun } from "lucide-react";
+import { useWeather } from "@/contexts/WeatherContext";
 
-interface SunriseCardProps {
-  city: string;
-}
-
-const SunriseCard = ({ city }: SunriseCardProps) => {
-  const geoQuery = useQuery({
-    queryKey: ["geo", city],
-    queryFn: () => geocodeCity(city),
-  });
-
-  const coords = geoQuery.data ? { lat: geoQuery.data.lat, lon: geoQuery.data.lon } : null;
-
-  const weatherQuery = useQuery({
-    queryKey: ["current", coords?.lat, coords?.lon],
-    queryFn: () => fetchCurrentWeather(coords!.lat, coords!.lon, "metric"),
-    enabled: !!coords,
-  });
-
-  if (geoQuery.isLoading || weatherQuery.isLoading) {
-    return (
-      <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass">
-        <h3 className="text-lg sm:text-xl font-medium text-foreground mb-6 sm:mb-8 text-shadow">Sunrise & Sunset</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 animate-pulse">
-          <div className="glass rounded-2xl p-4 sm:p-5">
-            <div className="h-4 w-20 bg-foreground/10 rounded mb-3" />
-            <div className="h-7 sm:h-8 w-24 bg-foreground/10 rounded" />
-          </div>
-          <div className="glass rounded-2xl p-4 sm:p-5">
-            <div className="h-4 w-20 bg-foreground/10 rounded mb-3" />
-            <div className="h-7 sm:h-8 w-24 bg-foreground/10 rounded" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (geoQuery.isError || !coords) {
-    return (
-      <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass">
-        <h3 className="text-lg sm:text-xl font-medium text-foreground mb-6 sm:mb-8 text-shadow">Sunrise & Sunset</h3>
-        <p className="text-sm text-red-500">Could not find the city "{city}".</p>
-      </div>
-    );
-  }
-
-  if (weatherQuery.isError || !weatherQuery.data) {
-    return (
-      <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass">
-        <h3 className="text-lg sm:text-xl font-medium text-foreground mb-6 sm:mb-8 text-shadow">Sunrise & Sunset</h3>
-        <p className="text-sm text-red-500">Failed to load data.</p>
-      </div>
-    );
-  }
-
-  const w = weatherQuery.data;
-  const tz = w.timezone ?? 0;
-  const sunrise = w.sys?.sunrise ? new Date((w.sys.sunrise + tz) * 1000) : null;
-  const sunset = w.sys?.sunset ? new Date((w.sys.sunset + tz) * 1000) : null;
-
-  let length = "-";
-  if (sunrise && sunset) {
-    const diffMs = sunset.getTime() - sunrise.getTime();
-    const hours = Math.floor(diffMs / (1000 * 60 * 60));
-    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-    length = `${hours}h ${minutes}m`;
-  }
-
-  const tiles = [
-    {
-      title: "Sunrise",
-      time: sunrise ? format(sunrise, "h:mm a") : "-",
-      icon: Sun,
-      bg: "bg-gradient-to-br from-orange-500/20 to-yellow-500/20",
-      iconGrad: "from-orange-400 to-yellow-400",
-    },
-    {
-      title: "Sunset",
-      time: sunset ? format(sunset, "h:mm a") : "-",
-      icon: Sunset,
-      bg: "bg-gradient-to-br from-orange-600/20 to-red-600/20",
-      iconGrad: "from-orange-500 to-red-500",
-    },
-  ];
+const SunriseCard = () => {
+  const { city, geoData } = useWeather();
+  const locationName = geoData ? `${geoData.name}, ${geoData.country}` : city;
 
   return (
-    <div className="glass-card rounded-3xl p-6 sm:p-8 shadow-glass">
-      <h3 className="text-lg sm:text-xl font-medium text-foreground mb-6 sm:mb-8 text-shadow">Sunrise & Sunset</h3>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-        {tiles.map((t, i) => (
-          <div key={i} className="glass rounded-2xl p-4 sm:p-5 glass-hover interactive-card">
-            <div className="flex items-center justify-between mb-3 sm:mb-4">
-              <div className={`p-3 rounded-xl ${t.bg} backdrop-blur-sm`}>
-                <t.icon className={`h-4 w-4 bg-gradient-to-r ${t.iconGrad} bg-clip-text text-transparent`} />
-              </div>
-            </div>
-            <p className="text-[11px] sm:text-xs font-medium text-muted-foreground mb-2">{t.title}</p>
-            <p className="text-base sm:text-lg font-medium text-foreground text-shadow">{t.time}</p>
-          </div>
-        ))}
+    <div>
+      <div className="flex justify-between items-start mb-6">
+         <div>
+            <h3 className="font-bold text-lg text-gray-800 dark:text-gray-100">Sun</h3>
+            <p className="text-sm text-gray-500">{locationName}</p>
+         </div>
+         <div className="text-2xl font-bold text-orange-500">22°C</div>
+      </div>
+      
+      {/* Sun Arc */}
+      <div className="relative h-36 mb-2 flex flex-col items-center justify-end w-full px-4 mt-8">
+         {/* The Arc Container */}
+         <div className="w-full max-w-[220px] h-[110px] rounded-t-full border-t-[2px] border-l-[2px] border-r-[2px] border-dashed border-orange-300/60 relative overflow-hidden flex items-end">
+            {/* Gradient Fill inside the arc */}
+            <div className="w-full h-full bg-gradient-to-b from-transparent to-gray-300/40 dark:to-gray-500/30"></div>
+         </div>
+         
+         {/* Base line */}
+         <div className="w-full h-[1px] bg-gray-200 dark:bg-gray-700"></div>
+         
+         {/* Sun Icon Positioned on Arc (approximate right side) */}
+         <div className="absolute top-4 right-14">
+            <Sun className="w-5 h-5 text-orange-400 fill-orange-400 drop-shadow-md" />
+         </div>
+      </div>
+      
+      <div className="flex justify-between text-xs font-semibold text-gray-500 mb-8">
+         <div className="flex flex-col items-start">
+            <span>Sunset</span>
+            <span>06:00 am</span>
+         </div>
+         <div className="flex flex-col items-end">
+            <span>Sunrise</span>
+            <span>06:45 am</span>
+         </div>
       </div>
 
-      <div className="mt-5 sm:mt-6 glass rounded-2xl p-4 sm:p-5">
-        <p className="text-[11px] sm:text-xs font-medium text-muted-foreground mb-1">Length of day</p>
-        <p className="text-base sm:text-lg font-medium text-foreground text-shadow">{length}</p>
+      {/* UVI Card */}
+      <div className="bg-[#2A3547] text-white rounded-[24px] p-5 flex items-center gap-4">
+         <div className="bg-orange-400 p-2 rounded-full">☀️</div>
+         <div>
+            <div className="flex items-center gap-2">
+               <span className="text-xl font-bold">20 UVI</span>
+               <span className="bg-lime-400 text-lime-900 text-[10px] font-bold px-2 py-0.5 rounded-full">Moderate</span>
+            </div>
+            <p className="text-xs text-gray-300 mt-1">Moderate risk of from UV rays</p>
+         </div>
       </div>
     </div>
   );

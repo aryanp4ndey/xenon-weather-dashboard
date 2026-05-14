@@ -66,6 +66,20 @@ export async function geocodeCity(city: string): Promise<GeoResult | null> {
   return null;
 }
 
+export async function reverseGeocode(lat: number, lon: number): Promise<GeoResult | null> {
+  ensureApiKey();
+  try {
+    const url = `${API_BASE}/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${API_KEY}`;
+    const res = await fetch(url, { headers: { Accept: "application/json" } });
+    if (!res.ok) return null;
+    const data: GeoResult[] = await res.json();
+    if (data && data.length > 0) return data[0];
+  } catch (error) {
+    console.warn("Reverse geocoding failed:", error);
+  }
+  return null;
+}
+
 // Search for multiple matching cities for autocomplete suggestions
 export async function searchCities(query: string, limit = 5): Promise<GeoResult[]> {
   ensureApiKey();
