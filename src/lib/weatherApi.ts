@@ -127,3 +127,15 @@ export async function fetchForecast(lat: number, lon: number, units: "metric" | 
   if (!res.ok) throw new Error(`Forecast failed: ${res.status} ${res.statusText}`);
   return res.json();
 }
+
+export async function fetchAirQuality(lat: number, lon: number): Promise<any> {
+  ensureApiKey();
+  const url = `${API_BASE}/data/2.5/air_pollution?lat=${lat}&lon=${lon}&appid=${API_KEY}`;
+  const res = await fetch(url, {
+    headers: {
+      'Accept': 'application/json',
+    },
+  });
+  if (!res.ok) throw new Error(`Air quality failed: ${res.status} ${res.statusText}`);
+  return res.json();
+}

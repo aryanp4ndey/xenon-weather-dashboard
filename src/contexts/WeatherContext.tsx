@@ -1,6 +1,6 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { geocodeCity, fetchCurrentWeather, fetchForecast } from '@/lib/weatherApi';
+import { geocodeCity, fetchCurrentWeather, fetchForecast, fetchAirQuality } from '@/lib/weatherApi';
 
 interface WeatherContextType {
   city: string;
@@ -8,6 +8,7 @@ interface WeatherContextType {
   geoData: any;
   weatherData: any;
   forecastData: any;
+  airQualityData: any;
   isLoading: boolean;
   isError: boolean;
 }
@@ -50,8 +51,16 @@ export const WeatherProvider: React.FC<WeatherProviderProps> = ({ children, city
     gcTime: 30 * 60 * 1000, // 30 minutes
   });
 
-  const isLoading = geoQuery.isLoading || weatherQuery.isLoading || forecastQuery.isLoading;
-  const isError = geoQuery.isError || weatherQuery.isError || forecastQuery.isError;
+  // Air Quality query
+  const aqiQuery = useQuery({
+    queryKey: ["aqi", coords?.lat, coords?.lon],
+    queryFn: () => fetchAirQuality(coords!.lat, coords!.lon),
+    enabled: !!coords,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const isLoading = geoQuery.isLoading || weatherQuery.isLoading || forecastQuery.isLoading || aqiQuery.isLoading;
+  const isError = geoQuery.isError || weatherQuery.isError || forecastQuery.isError || aqiQuery.isError;
 
   return (
     <WeatherContext.Provider
@@ -61,6 +70,7 @@ export const WeatherProvider: React.FC<WeatherProviderProps> = ({ children, city
         geoData: geoQuery.data,
         weatherData: weatherQuery.data,
         forecastData: forecastQuery.data,
+        airQualityData: aqiQuery.data,
         isLoading,
         isError,
       }}

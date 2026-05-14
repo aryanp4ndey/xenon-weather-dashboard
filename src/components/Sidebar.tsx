@@ -2,13 +2,11 @@ import React, { useState } from "react";
 import { LayoutDashboard, Map, MapPin, Calendar, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export const Sidebar = () => {
-  const [activeTab, setActiveTab] = useState(0);
-
+export const Sidebar = ({ activeTab, setActiveTab }: { activeTab: number, setActiveTab: (tab: number) => void }) => {
   return (
     <div className="flex flex-col items-center py-8 bg-background border-r border-border h-full gap-8">
-      <div className="flex flex-col items-center justify-center h-12 w-12 rounded-2xl bg-white dark:bg-gray-800 shadow-sm mb-8 overflow-hidden p-1">
-        <img src="/images/logo.png" alt="Logo" className="w-full h-full object-contain" />
+      <div className="flex flex-col items-center justify-center h-12 w-12 rounded-full bg-white dark:bg-gray-800 shadow-sm mb-8 overflow-hidden">
+        <img src="/images/Weather-App-Icon.jpg" alt="Logo" className="w-full h-full object-cover" />
       </div>
 
       <nav className="flex flex-col gap-6 w-full items-center">

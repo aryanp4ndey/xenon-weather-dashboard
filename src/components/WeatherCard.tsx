@@ -51,51 +51,58 @@ const WeatherCard = memo(() => {
 
   return (
     <div className="relative rounded-[32px] overflow-hidden h-[250px] shadow-lg group interactive-card">
-      {/* Background Image - scaled up slightly to hide any generated borders */}
+      {/* Background Image - ensure it covers everything and is high quality */}
       <div 
-        className="absolute inset-0 bg-cover bg-center z-0 transition-transform duration-700 group-hover:scale-110 scale-105"
-        style={{ backgroundImage: bgImage }}
+        className="absolute inset-0 z-0 transition-transform duration-1000 group-hover:scale-110 scale-105"
+        style={{ 
+          backgroundImage: bgImage,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          width: '100%',
+          height: '100%'
+        }}
       ></div>
       
       {/* Dark overlay for text readability in dark mode */}
-      <div className="absolute inset-0 bg-black/10 dark:bg-black/30 z-0"></div>
+      <div className="absolute inset-0 bg-black/5 dark:bg-black/40 z-0"></div>
 
       {/* Content */}
       <div className="relative z-10 p-6 flex flex-col h-full justify-between drop-shadow-md">
         
         {/* Top section */}
-        <div className="flex items-center gap-2">
-           <div className="bg-white/20 p-2 rounded-full backdrop-blur-md text-white">
-            <Cloud size={20} />
+        <div className="flex items-center gap-3">
+           <div className="bg-white/20 p-2.5 rounded-2xl backdrop-blur-md text-white shadow-sm">
+            <Cloud size={22} />
           </div>
           <div>
-            <h3 className="font-semibold text-lg leading-tight text-white">Weather</h3>
-            <p className="text-xs text-white/80 font-medium">What's the weather.</p>
+            <h3 className="font-bold text-lg leading-tight text-white">Weather</h3>
+            <p className="text-xs text-white/70 font-medium">What's the weather.</p>
           </div>
         </div>
 
         {/* Middle section: Temperature */}
-        <div className="mt-auto mb-4 text-white">
+        <div className="text-white">
           <div className="flex items-baseline gap-3">
-            <span className="text-5xl sm:text-6xl font-bold">{temp}°C</span>
-            <span className="bg-white/20 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-full">{tempMin}°C</span>
+            <span className="text-6xl sm:text-7xl font-black tracking-tighter leading-none">{temp}°C</span>
+            <span className="bg-white/20 backdrop-blur-md text-white text-sm font-bold px-4 py-1.5 rounded-full border border-white/10">{tempMin}°C</span>
           </div>
-          <p className="text-sm font-medium mt-1 capitalize">{desc}</p>
+          <p className="text-base font-bold mt-2 capitalize opacity-90">{desc}</p>
         </div>
 
         {/* Bottom section: Metrics Pills */}
-        <div className="flex gap-2 sm:gap-3 mt-2 overflow-hidden w-full">
-          <div className="bg-[#1c2128]/90 backdrop-blur-md text-white px-5 py-3 rounded-2xl flex flex-col shadow-lg flex-1 min-w-0">
-             <span className="text-[10px] text-gray-400 font-medium">Pressure</span>
-             <span className="font-bold text-sm truncate">{pressure}mb</span>
+        <div className="flex gap-3 sm:gap-4 w-full">
+          <div className="bg-[#1c2128]/95 backdrop-blur-md text-white px-3 py-3 rounded-3xl flex flex-col items-center justify-center shadow-xl flex-1 min-w-0 border border-white/5">
+             <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Pressure</span>
+             <span className="font-black text-sm truncate tracking-tight">{pressure} <span className="text-[10px] font-normal opacity-60 uppercase">mb</span></span>
           </div>
-          <div className="bg-[#a3e635]/90 backdrop-blur-md text-lime-950 px-5 py-3 rounded-2xl flex flex-col shadow-lg flex-1 min-w-0">
-             <span className="text-[10px] font-medium opacity-80">Visibility</span>
-             <span className="font-bold text-sm truncate">{visibility.toFixed(1)} km</span>
+          <div className="bg-[#a3e635] text-lime-950 px-3 py-3 rounded-3xl flex flex-col items-center justify-center shadow-xl flex-1 min-w-0">
+             <span className="text-[10px] font-bold uppercase tracking-widest mb-1 opacity-70">Visibility</span>
+             <span className="font-black text-sm truncate tracking-tight">{visibility.toFixed(1)} <span className="text-[10px] font-normal opacity-60 uppercase">km</span></span>
           </div>
-          <div className="bg-white/90 backdrop-blur-md text-gray-800 px-5 py-3 rounded-2xl flex flex-col shadow-lg flex-1 min-w-0">
-             <span className="text-[10px] text-gray-500 font-medium">Humidity</span>
-             <span className="font-bold text-sm truncate">{humidity}%</span>
+          <div className="bg-white/95 backdrop-blur-md text-gray-900 px-3 py-3 rounded-3xl flex flex-col items-center justify-center shadow-xl flex-1 min-w-0 border border-black/5">
+             <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Humidity</span>
+             <span className="font-black text-sm truncate tracking-tight">{humidity}<span className="text-[10px] font-normal opacity-60">%</span></span>
           </div>
         </div>
 
