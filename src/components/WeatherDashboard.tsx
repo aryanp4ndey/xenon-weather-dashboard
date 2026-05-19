@@ -238,7 +238,7 @@ const WeatherDashboardContent = memo(() => {
 WeatherDashboardContent.displayName = 'WeatherDashboardContent';
 
 const WeatherDashboard = () => {
-  const [city, setCity] = useState<string>("Banten");
+  const [city, setCity] = useState<string>("Delhi, India");
 
   return (
     <WeatherProvider city={city} setCity={setCity}>
